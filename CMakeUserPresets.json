@@ -1,0 +1,9 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "/home/adrian/Projects/p2p_chat_app/build/Release/generators/CMakePresets.json"
+    ]
+}
