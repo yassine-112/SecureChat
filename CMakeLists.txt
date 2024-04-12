@@ -17,9 +17,10 @@ if(RUN_YARN_BUILD)
 endif()
 
 include_directories(include)
-file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp" "src/event_loop/*")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set (CMAKE_CXX_FLAGS "-g -O0")
 find_package(Drogon REQUIRED)
 add_subdirectory(c-toxcore)
 
