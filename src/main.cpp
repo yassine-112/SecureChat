@@ -41,16 +41,16 @@ int main() {
     std::thread web_thread = web_serve->spawn_thread();
 
 
-    /* main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_RECV, handle_msg); */
+    main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_RECV, handle_msg);
 
-    /* tox::self_node *node = new tox::self_node(main_event_loop); */
-    /* std::thread p2p_thread = node->spawn(); */
-    /* std::thread interface_thd = std::thread(msg_interface, main_event_loop); */
+    tox::self_node *node = new tox::self_node(main_event_loop);
+    std::thread p2p_thread = node->spawn();
+    std::thread interface_thd = std::thread(msg_interface, main_event_loop);
 
-    /* p2p_thread.join(); */
+    p2p_thread.join();
     main_loop_thread.join();
     web_thread.join();
-    /* interface_thd.join(); */
+    interface_thd.join();
 
 
     return 0;

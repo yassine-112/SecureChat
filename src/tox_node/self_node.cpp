@@ -61,7 +61,9 @@ std::thread self_node::spawn() {
     return std::thread(&self_node::main_loop, this);
 }
 void self_node::register_handlers() {
+    std::printf("registring handlers\n");
     this->main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_SENT, self_node_cb::handle_message_sent);
+    this->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_LIST, self_node_cb::handle_friend_list_req);
 }
 void self_node::register_tox_callbacks() {
     Tox* tox = this->tox_c_instance;
@@ -108,4 +110,16 @@ void self_node_cb::handle_message_sent(event::event e) {
     tox_friend_send_message(curr_node->tox_c_instance, curr_e->friend_number, curr_e->type
             , curr_e->message, curr_e->length, NULL);
 
+}
+
+void self_node_cb::handle_friend_list_req(event::sync_event * e) {
+    event::sync_event* req_e = new event::sync_event();
+    req_e->e_type = event::event_type::E_RESP_GET_FRIEND_LIST;
+    req_e->event_payload = malloc(tox_self_get_friend_list_size(curr_node->tox_c_instance) * sizeof(Tox_Friend_Number));
+    tox_self_get_friend_list(curr_node->tox_c_instance, (Tox_Friend_Number* )req_e->event_payload);
+    req_e->event_id = 8392;
+    req_e->is_request = false;
+    std::printf("sending response payload %p, %d\n", req_e->event_payload, *(int*)req_e->event_payload);
+
+    curr_node->main_event_loop->push_resp(req_e);
 }

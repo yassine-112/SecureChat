@@ -50,6 +50,8 @@ namespace tox{
         // handlers to handle events from the event loop
         static void handle_message_sent(event::event e);
 
+        static void handle_friend_list_req(event::sync_event * e);
+
 
         // tox callbacks: put events in the event loop
         static void friend_request_cb(Tox *tox, const uint8_t *public_key, 
