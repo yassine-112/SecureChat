@@ -8,6 +8,7 @@
 #include <utility>
 #include <iostream>
 #include <list>
+#include <chrono>
 #include "unistd.h"
 #include "tox.h"
 
@@ -59,9 +60,10 @@ namespace event {
         void push_resp(sync_event * e);
         void subscribe_event(event_type e_type, callback_fn callback);
         void subscribe_event_resp(event_type e_type, callback_fn_resp callback);
-        std::thread spawn_thread();
+        std::pair<std::thread, std::thread > spawn_thread();
         private:
         bool main_loop();
+        bool main_loop_resp();
         std::map<event_type, std::vector<callback_fn>*> *callback_list;
         std::map<event_type, std::vector<callback_fn_resp>*> *callback_list_resp;
         copper::buffered_channel<event> *main_event_queue;

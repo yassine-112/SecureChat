@@ -8,7 +8,7 @@ void TestCtrl::asyncHandleHttpRequest(const HttpRequestPtr &req,
     event::sync_event* req_e = new event::sync_event();
     req_e->e_type = event::event_type::E_RESP_GET_FRIEND_LIST;
     req_e->event_payload = nullptr;
-    req_e->event_id = 8392;
+    req_e->event_id = -1;
     req_e->is_request = true;
 
     event::sync_event* e = back_end::back_end_server::main_event_loop->push_wait(req_e);

@@ -41,12 +41,16 @@ void event_loop::subscribe_event_resp(event_type e_type, callback_fn_resp callba
 struct sync_event* event_loop::push_wait(sync_event * e) {
     std::printf("added push wait req");
     std::printf("this is: %p\n", this);
+
+    e->event_id = std::rand();
     bool r = this->req_event_queue->push(e);
     std::mutex* mutex_lock = new std::mutex();
     pending_req_item * req_item = new pending_req_item();
+
     req_item->lock = mutex_lock;
     req_item->event_id = e->event_id;
     req_item->response = nullptr;
+
     this->pending_requests->push_back(req_item);
     std::printf("locking push wait\n");
     mutex_lock->lock();
@@ -60,10 +64,9 @@ bool event_loop::main_loop() {
 
     std::printf("main event loop tid: %d\n", gettid());
     
-    while (!this->main_event_queue->is_read_closed() && !this->req_event_queue->is_read_closed()) {
-        std::printf("looping so  hard omg\n");
-        std::optional<event> curr_e_opt = this->main_event_queue->try_pop();
-        std::optional<sync_event*> curr_e_opt_sync = this->req_event_queue->try_pop();
+    while (!this->main_event_queue->is_read_closed() ) {
+        std::printf("looping so  hard omg1\n");
+        std::optional<event> curr_e_opt = this->main_event_queue->pop();
         if (curr_e_opt) {
             event curr_e = curr_e_opt.value();
             if (this->callback_list->count(curr_e.e_type) != 0) {
@@ -74,6 +77,14 @@ bool event_loop::main_loop() {
             }
         }
 
+    }
+
+    return true;
+}
+bool event_loop::main_loop_resp() {
+    while(!this->req_event_queue->is_read_closed()) {
+        std::optional<sync_event*> curr_e_opt_sync = this->req_event_queue->pop();
+        std::printf("looping so  hard omg2 resp\n");
         if(curr_e_opt_sync) {
             sync_event *curr_e = curr_e_opt_sync.value();
             if (curr_e->is_request) {
@@ -93,13 +104,12 @@ bool event_loop::main_loop() {
                 }
             }
         }
-    }
 
-    return true;
+    }
 }
 
-std::thread event_loop::spawn_thread() {
-    return std::thread(&event_loop::main_loop, this);
+std::pair<std::thread,std::thread> event_loop::spawn_thread() {
+    return {std::thread(&event_loop::main_loop, this), std::thread(&event_loop::main_loop_resp, this)};
 }
 void event_loop::push_resp(sync_event * e) {
     this->req_event_queue->push(e);

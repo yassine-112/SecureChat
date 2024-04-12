@@ -117,9 +117,9 @@ void self_node_cb::handle_friend_list_req(event::sync_event * e) {
     req_e->e_type = event::event_type::E_RESP_GET_FRIEND_LIST;
     req_e->event_payload = malloc(tox_self_get_friend_list_size(curr_node->tox_c_instance) * sizeof(Tox_Friend_Number));
     tox_self_get_friend_list(curr_node->tox_c_instance, (Tox_Friend_Number* )req_e->event_payload);
-    req_e->event_id = 8392;
+    req_e->event_id = e->event_id;
     req_e->is_request = false;
-    std::printf("sending response payload %p, %d\n", req_e->event_payload, *(int*)req_e->event_payload);
+    std::printf("sending response payload: %d %p, of id: %d\n", req_e->event_payload, *(int*)req_e->event_payload, req_e->event_id);
 
     curr_node->main_event_loop->push_resp(req_e);
 }

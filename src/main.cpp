@@ -36,7 +36,7 @@ void msg_interface(event::event_loop *l) {
 
 int main() {
     event::event_loop *main_event_loop = new event::event_loop();
-    std::thread main_loop_thread = main_event_loop->spawn_thread();
+    std::pair<std::thread, std::thread> main_loop_threads = main_event_loop->spawn_thread();
     back_end::back_end_server *web_serve = new back_end::back_end_server(main_event_loop);
     std::thread web_thread = web_serve->spawn_thread();
 
@@ -48,7 +48,8 @@ int main() {
     std::thread interface_thd = std::thread(msg_interface, main_event_loop);
 
     p2p_thread.join();
-    main_loop_thread.join();
+    main_loop_threads.first.join();
+    main_loop_threads.second.join();
     web_thread.join();
     interface_thd.join();
 
