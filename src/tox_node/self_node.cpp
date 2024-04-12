@@ -1,6 +1,7 @@
 #include "self_node.hpp"
 using namespace tox;
 event::event_loop *self_node::main_event_loop;
+self_node *tox_callbacks::curr_node;
 self_node::self_node(
         event::event_loop *main_event_loop,
         std::list<dht_node> *dht_node_list ,
@@ -63,16 +64,18 @@ std::thread self_node::spawn() {
 void self_node::register_tox_callbacks() {
     Tox* tox = this->tox_c_instance;
     // binding as work arround
-    tox_callback_friend_request(tox, this->friend_request_cb);
-    tox_callback_friend_message(tox, this->friend_message_cb);
-    tox_callback_self_connection_status(tox, this->self_connection_status_cb);
+    tox_callbacks::curr_node = this;
+    tox_callback_friend_request(tox, tox_callbacks::friend_request_cb);
+    tox_callback_friend_message(tox, tox_callbacks::friend_message_cb);
+    tox_callback_self_connection_status(tox, tox_callbacks::self_connection_status_cb);
 }
-void self_node::friend_request_cb(Tox *tox, const uint8_t *public_key, const uint8_t *message, size_t length,
+void tox_callbacks::friend_request_cb(Tox *tox, const uint8_t *public_key, const uint8_t *message, size_t length,
                 void *user_data)
         {
-            tox_friend_add_norequest(tox, public_key, NULL);
+            if (curr_node->auto_accept)
+                tox_friend_add_norequest(tox, public_key, NULL);
         }
-void self_node::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
+void tox_callbacks::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
                 size_t length, void *user_data)
         {
             tox_friend_send_message(tox, friend_number, type, message, length, NULL);
@@ -80,7 +83,7 @@ void self_node::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSAGE_
             self_node::main_event_loop->push_event({.e_type = event::event_type::E_NEW_MESSAGE,
                     .str = (char *)message});
         }
-void self_node::self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void *user_data)
+void tox_callbacks::self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void *user_data)
         {
             switch (connection_status) {
                 case TOX_CONNECTION_NONE:

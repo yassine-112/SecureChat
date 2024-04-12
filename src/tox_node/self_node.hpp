@@ -13,9 +13,6 @@ namespace tox{
         uint16_t port;
         const char key_hex[TOX_PUBLIC_KEY_SIZE*2 + 1];
     };
-    class self_node_callbacks {
-
-    };
     class self_node {
         public:
             self_node(
@@ -27,6 +24,7 @@ namespace tox{
         std::thread spawn();
         static event::event_loop *main_event_loop;
         private:
+        friend class tox_callbacks;
         std::string * serialization_path;
         std::string * user_name;
         std::string * user_status;
@@ -39,10 +37,15 @@ namespace tox{
         void main_loop();
         void register_handlers(); 
         void register_tox_callbacks();
+        bool auto_accept = true;
 
         // handlers to handle events from the event loop
 
         // tox callbacks: to put events in the event loop
+    };
+    class tox_callbacks {
+        public:
+        static  self_node *curr_node;
         static void friend_request_cb(Tox *tox, const uint8_t *public_key, const uint8_t *message, size_t length,
                 void *user_data);
 
