@@ -17,7 +17,8 @@ if(RUN_YARN_BUILD)
 endif()
 
 include_directories(include)
-file(GLOB_RECURSE SOURCES "src/*.cpp" "src/event_loop/*")
+file(GLOB_RECURSE SOURCES "src/*.cpp" "src/event_loop/*" "src/tox_node/*" "src/back_end/*"  "src/back_end/controller/*")
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set (CMAKE_CXX_FLAGS "-g -O0")

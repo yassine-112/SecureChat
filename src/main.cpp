@@ -6,6 +6,7 @@
 #include <cstring>
 #include "event_loop/event_loop.hpp"
 #include "tox_node/self_node.hpp"
+#include "back_end/http_server.hpp"
 
 
 void handle_msg(event::event _e) {
@@ -34,18 +35,22 @@ void msg_interface(event::event_loop *l) {
 }
 
 int main() {
-
     event::event_loop *main_event_loop = new event::event_loop();
-    main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_RECV, handle_msg);
-
-    tox::self_node *node = new tox::self_node(main_event_loop);
     std::thread main_loop_thread = main_event_loop->spawn_thread();
-    std::thread p2p_thread = node->spawn();
-    std::thread interface_thd = std::thread(msg_interface, main_event_loop);
+    back_end::back_end_server *web_serve = new back_end::back_end_server(main_event_loop);
+    std::thread web_thread = web_serve->spawn_thread();
 
-    p2p_thread.join();
+
+    /* main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_RECV, handle_msg); */
+
+    /* tox::self_node *node = new tox::self_node(main_event_loop); */
+    /* std::thread p2p_thread = node->spawn(); */
+    /* std::thread interface_thd = std::thread(msg_interface, main_event_loop); */
+
+    /* p2p_thread.join(); */
     main_loop_thread.join();
-    interface_thd.join();
+    web_thread.join();
+    /* interface_thd.join(); */
 
 
     return 0;
