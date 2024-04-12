@@ -10,6 +10,7 @@ event_loop::~event_loop() {
     delete this->callback_list;
 }
 bool event_loop::push_event(event e) {
+    std::printf("event added to event loop\n");
     return this->main_event_queue->push(e);
 }
 void event_loop::subscribe_event(event_type e_type, callback_fn callback) {
@@ -21,6 +22,7 @@ void event_loop::subscribe_event(event_type e_type, callback_fn callback) {
 
 bool event_loop::main_loop() {
 
+    std::printf("main event loop\n");
     
     while (!this->main_event_queue->is_read_closed()) {
         std::optional<event> curr_e_opt = this->main_event_queue->pop();

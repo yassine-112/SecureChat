@@ -9,6 +9,7 @@
 namespace event {
     enum event_type {
         E_USER_NOTIFY,
+        E_NEW_MESSAGE,
         E_SYSTEM,
         E_TEST1
     };
