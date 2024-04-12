@@ -1,16 +1,14 @@
 #include "self_node.hpp"
 using namespace tox;
-event::event_loop *self_node::main_event_loop;
-self_node *tox_callbacks::curr_node;
+self_node *self_node_cb::curr_node;
 self_node::self_node(
         event::event_loop *main_event_loop,
         std::list<dht_node> *dht_node_list ,
         Tox_Options  *node_options ,
         std::string *serialization_path )
-    :  dht_node_list(dht_node_list), node_options(node_options), serialization_path(serialization_path)
+    : main_event_loop(main_event_loop), dht_node_list(dht_node_list), node_options(node_options), serialization_path(serialization_path)
 {
 
-    self_node::main_event_loop = main_event_loop;
     this->tox_c_instance = tox_new(NULL, NULL);
     this->user_name = new std::string("test dev build");
     this->user_status = new std::string("test dev build");
@@ -43,6 +41,7 @@ self_node::self_node(
     this->user_tox_id = new std::string(tox_id_hex);
     std::printf("id: %s\n", tox_id_hex);
 
+    this->register_handlers();
     this->register_tox_callbacks();
 }
 self_node::~self_node() {
@@ -61,29 +60,35 @@ void self_node::main_loop() {
 std::thread self_node::spawn() {
     return std::thread(&self_node::main_loop, this);
 }
+void self_node::register_handlers() {
+    this->main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_SENT, self_node_cb::handle_message_sent);
+}
 void self_node::register_tox_callbacks() {
     Tox* tox = this->tox_c_instance;
-    // binding as work arround
-    tox_callbacks::curr_node = this;
-    tox_callback_friend_request(tox, tox_callbacks::friend_request_cb);
-    tox_callback_friend_message(tox, tox_callbacks::friend_message_cb);
-    tox_callback_self_connection_status(tox, tox_callbacks::self_connection_status_cb);
+    self_node_cb::curr_node = this;
+    tox_callback_friend_request(tox, self_node_cb::friend_request_cb);
+    tox_callback_friend_message(tox, self_node_cb::friend_message_cb);
+    tox_callback_self_connection_status(tox, self_node_cb::self_connection_status_cb);
 }
-void tox_callbacks::friend_request_cb(Tox *tox, const uint8_t *public_key, const uint8_t *message, size_t length,
+void self_node_cb::friend_request_cb(Tox *tox, const uint8_t *public_key, const uint8_t *message, size_t length,
                 void *user_data)
         {
             if (curr_node->auto_accept)
                 tox_friend_add_norequest(tox, public_key, NULL);
         }
-void tox_callbacks::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
+void self_node_cb::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
                 size_t length, void *user_data)
         {
-            tox_friend_send_message(tox, friend_number, type, message, length, NULL);
-            std::printf("ptr: %p\n", self_node::main_event_loop);
-            self_node::main_event_loop->push_event({.e_type = event::event_type::E_NEW_MESSAGE,
-                    .str = (char *)message});
+            std::printf("ptr: %p\n", curr_node->main_event_loop);
+            event::message_event *e = new event::message_event();
+            e->message = message;
+            e->length = length;
+            e->friend_number = friend_number;
+            e->type = type;
+            curr_node->main_event_loop->push_event({.e_type = event::event_type::E_NEW_MESSAGE_RECV,
+                    .event_payload = e});
         }
-void tox_callbacks::self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void *user_data)
+void self_node_cb::self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void *user_data)
         {
             switch (connection_status) {
                 case TOX_CONNECTION_NONE:
@@ -97,3 +102,10 @@ void tox_callbacks::self_connection_status_cb(Tox *tox, TOX_CONNECTION connectio
                     break;
             }
         }
+void self_node_cb::handle_message_sent(event::event e) {
+    // TODO: do checking
+    event::message_event *curr_e = (event::message_event*) e.event_payload;
+    tox_friend_send_message(curr_node->tox_c_instance, curr_e->friend_number, curr_e->type
+            , curr_e->message, curr_e->length, NULL);
+
+}

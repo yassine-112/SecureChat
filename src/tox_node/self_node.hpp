@@ -22,9 +22,9 @@ namespace tox{
         std::string *serialization_path = nullptr );
         ~self_node();
         std::thread spawn();
-        static event::event_loop *main_event_loop;
+        event::event_loop *main_event_loop;
         private:
-        friend class tox_callbacks;
+        friend class self_node_cb;
         std::string * serialization_path;
         std::string * user_name;
         std::string * user_status;
@@ -41,17 +41,26 @@ namespace tox{
 
         // handlers to handle events from the event loop
 
-        // tox callbacks: to put events in the event loop
     };
-    class tox_callbacks {
-        public:
+    class self_node_cb {
+        private:
+        friend class self_node;
         static  self_node *curr_node;
-        static void friend_request_cb(Tox *tox, const uint8_t *public_key, const uint8_t *message, size_t length,
+
+        // handlers to handle events from the event loop
+        static void handle_message_sent(event::event e);
+
+
+        // tox callbacks: put events in the event loop
+        static void friend_request_cb(Tox *tox, const uint8_t *public_key, 
+                const uint8_t *message, size_t length,
                 void *user_data);
 
-       static  void friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
+        static  void friend_message_cb(Tox *tox, uint32_t friend_number, 
+                TOX_MESSAGE_TYPE type, const uint8_t *message,
                 size_t length, void *user_data);
 
-static         void self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void *user_data);
+        static void self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, 
+                void *user_data);
     };
 };

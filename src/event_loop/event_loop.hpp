@@ -5,17 +5,30 @@
 #include <vector>
 #include <thread>
 #include <iostream>
+#include "tox.h"
 
 namespace event {
+    // do not modify exsiting event names!
     enum event_type {
         E_USER_NOTIFY,
-        E_NEW_MESSAGE,
+        E_NEW_MESSAGE_RECV,
+        E_NEW_MESSAGE_SENT,
         E_SYSTEM,
+        E_SYSTEM_CONNECTED,
         E_TEST1
+    };
+    struct system_connected_event {
+        TOX_CONNECTION connection_mode;
+    };
+    struct message_event {
+        uint32_t friend_number; 
+        TOX_MESSAGE_TYPE type; 
+        const uint8_t *message;
+        size_t length;
     };
     struct event {
         event_type e_type;
-        const char * str;
+        void * event_payload;
     };
 
     typedef std::function<void(event)> callback_fn;
