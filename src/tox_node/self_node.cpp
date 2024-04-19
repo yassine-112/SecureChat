@@ -20,6 +20,8 @@ self_node::self_node(
 {
 
     tox_options_default(&node_options);
+    if (enable_trace) node_options.log_callback = self_node_cb::log;
+
     FILE *f = fopen(savedata_filename, "rb");
     if (f) {
         fseek(f, 0, SEEK_END);
@@ -42,9 +44,9 @@ self_node::self_node(
     dht_node nodes[] =
     {
         {"85.143.221.42",                      33445, "DA4E4ED4B697F2E9B000EEFE3A34B554ACD3F45F5C96EAEA2516DD7FF9AF7B43"},
-        {"2a04:ac00:1:9f00:5054:ff:fe01:becd", 33445, "DA4E4ED4B697F2E9B000EEFE3A34B554ACD3F45F5C96EAEA2516DD7FF9AF7B43"},
+        /* {"2a04:ac00:1:9f00:5054:ff:fe01:becd", 33445, "DA4E4ED4B697F2E9B000EEFE3A34B554ACD3F45F5C96EAEA2516DD7FF9AF7B43"}, */
         {"78.46.73.141",                       33445, "02807CF4F8BB8FB390CC3794BDF1E8449E9A8392C5D3F2200019DA9F1E812E46"},
-        {"2a01:4f8:120:4091::3",               33445, "02807CF4F8BB8FB390CC3794BDF1E8449E9A8392C5D3F2200019DA9F1E812E46"},
+        /* {"2a01:4f8:120:4091::3",               33445, "02807CF4F8BB8FB390CC3794BDF1E8449E9A8392C5D3F2200019DA9F1E812E46"}, */
         {"tox.initramfs.io",                   33445, "3F0A45A268367C1BEA652F258C85F4A66DA76BCAA667A49E770BCC4917AB6A25"},
         {"tox2.abilinski.com",                 33445, "7A6098B590BDC73F9723FC59F82B3F9085A64D1B213AAF8E610FD351930D052D"},
         {"205.185.115.131",                       53, "3091C6BEB2A993F1C6300C16549FABA67098FF3D62C6D253828B531470B53D68"},
@@ -103,13 +105,20 @@ void self_node::register_tox_callbacks() {
     tox_callback_friend_request(tox, self_node_cb::friend_request_cb);
     tox_callback_friend_message(tox, self_node_cb::friend_message_cb);
     tox_callback_self_connection_status(tox, self_node_cb::self_connection_status_cb);
+    tox_callback_friend_name(tox, self_node_cb::friend_name_cb);
+    tox_callback_friend_status(tox, self_node_cb::friend_status_cb);
+    tox_callback_friend_connection_status(tox, self_node_cb::friend_connection_status_cb);
+    tox_callback_friend_typing(tox, self_node_cb::friend_typing_cb);
+    tox_callback_friend_read_receipt(tox, self_node_cb::friend_read_receipt_cb);
 }
 void self_node_cb::friend_request_cb(Tox *tox,const uint8_t *public_key,const  uint8_t *message, size_t length,
                 void *user_data)
         {
             if (curr_node->auto_accept)
             {
+                printf("[TOX CALLBACK accepting fr req]\n");
                 tox_friend_add_norequest(tox, public_key, NULL);
+                curr_node->update_savedata_file();
             }
             else {
                 auto x = new std::pair<std::string*, std::string*>(
@@ -206,13 +215,17 @@ void self_node_cb::handle_friend_get_status_message(event::sync_event * e) {
 void self_node_cb::friend_name_cb(
         Tox *tox, Tox_Friend_Number friend_number,
         const uint8_t name[], size_t length, void *user_data) {
+    if (name == NULL) {
+        printf("[TOX CALLBACK] cant do crap name is null\n");
+        return;
+    }
     auto r = new std::pair<uint32_t, std::string*>(friend_number, new std::string((char*)name));
     SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 
 void self_node_cb::friend_status_cb(
         Tox *tox, Tox_Friend_Number friend_number, Tox_User_Status status, void *user_data) {
-    auto r = new std::pair<uint32_t, std::string*>(friend_number, new std::string((char*)status));
+    auto r = new std::pair<uint32_t, Tox_User_Status>(friend_number, status);
     SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 
@@ -231,4 +244,16 @@ void self_node_cb::friend_read_receipt_cb(
         Tox *tox, Tox_Friend_Number friend_number, Tox_Friend_Message_Id message_id, void *user_data) {
     auto r = new std::pair<uint32_t, uint32_t>(friend_number, message_id);
     SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
+}
+void self_node::stop_instance() {
+    tox_kill(tox_c_instance);
+}
+void self_node_cb::log(Tox *tox, Tox_Log_Level level, const char *file, uint32_t line, const char *func,
+                        const char *message, void *user_data) {
+    // to this in a better damn way
+    FILE* f = fopen("./tox_trace", "a+");
+    if (f) {
+    fprintf(f, "[TOXCORE][%s]%s:%d:%s - %s\n", tox_log_level_to_string(level), file, line, func, message);
+    fclose(f);
+    }
 }

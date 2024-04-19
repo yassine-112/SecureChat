@@ -21,6 +21,7 @@ namespace tox{
         std::string *serialization_path = nullptr );
         ~self_node();
         std::thread spawn();
+        void stop_instance();
         event::event_loop *main_event_loop;
         private:
         friend class self_node_cb;
@@ -38,6 +39,7 @@ namespace tox{
         void register_tox_callbacks();
         void update_savedata_file();
         bool auto_accept = true;
+        bool enable_trace = false;
         const char *savedata_filename = "savedata.tox";
         const char *savedata_tmp_filename = "savedata.tox.tmp";
 
@@ -48,6 +50,9 @@ namespace tox{
         private:
         friend class self_node;
         static  self_node *curr_node;
+
+static void log(Tox *tox, Tox_Log_Level level, const char *file, uint32_t line, const char *func,
+                        const char *message, void *user_data);
 
         // handlers to handle events from the event loop
         static void handle_message_sent(event::async_event e);
@@ -70,7 +75,6 @@ namespace tox{
 
         static void self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, 
                 void *user_data);
-// TODO: implement them - basic firends and messaging
         static void friend_name_cb(
                 Tox *tox, Tox_Friend_Number friend_number,
                 const uint8_t name[], size_t length, void *user_data);

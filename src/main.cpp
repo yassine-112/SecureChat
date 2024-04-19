@@ -47,6 +47,11 @@ int main() {
     std::thread p2p_thread = node->spawn();
     /* std::thread interface_thd = std::thread(msg_interface, main_event_loop); */
 
+
+    getchar();
+    node->stop_instance();
+    std::cout << "stopped tox\n";
+
     p2p_thread.join();
     main_loop_threads.first.join();
     main_loop_threads.second.join();
