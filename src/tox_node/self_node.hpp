@@ -18,7 +18,6 @@ namespace tox{
             self_node(
         event::event_loop *main_event_loop,
         std::list<dht_node> *dht_node_list = nullptr,
-        Tox_Options  *node_options = nullptr,
         std::string *serialization_path = nullptr );
         ~self_node();
         std::thread spawn();
@@ -30,14 +29,17 @@ namespace tox{
         std::string * user_status;
         std::string * user_tox_id;
         std::list<dht_node> *dht_node_list;
-        Tox_Options  * node_options;
+        Tox_Options   node_options;
         bool node_first_run;
         /* node_status */
         Tox* tox_c_instance;
         void main_loop();
         void register_handlers(); 
         void register_tox_callbacks();
+        void update_savedata_file();
         bool auto_accept = true;
+        const char *savedata_filename = "savedata.tox";
+        const char *savedata_tmp_filename = "savedata.tox.tmp";
 
         // handlers to handle events from the event loop
 

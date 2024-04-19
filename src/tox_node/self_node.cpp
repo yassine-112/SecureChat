@@ -2,15 +2,41 @@
 #include <string>
 using namespace tox;
 self_node *self_node_cb::curr_node;
+void self_node::update_savedata_file()
+{
+size_t size = tox_get_savedata_size(tox_c_instance);
+uint8_t *savedata = (uint8_t*)malloc(size);
+tox_get_savedata(tox_c_instance, savedata);
+FILE *f = fopen(savedata_tmp_filename, "wb");
+fwrite(savedata, size, 1, f);
+fclose(f);
+rename(savedata_tmp_filename, savedata_filename);
+}
 self_node::self_node(
         event::event_loop *main_event_loop,
         std::list<dht_node> *dht_node_list ,
-        Tox_Options  *node_options ,
         std::string *serialization_path )
-    : main_event_loop(main_event_loop), dht_node_list(dht_node_list), node_options(node_options), serialization_path(serialization_path)
+    : main_event_loop(main_event_loop), dht_node_list(dht_node_list),  serialization_path(serialization_path)
 {
 
-    this->tox_c_instance = tox_new(NULL, NULL);
+    tox_options_default(&node_options);
+    FILE *f = fopen(savedata_filename, "rb");
+    if (f) {
+        fseek(f, 0, SEEK_END);
+        long fsize = ftell(f);
+        fseek(f, 0, SEEK_SET);
+        uint8_t *savedata = (uint8_t*)malloc(fsize);
+        fread(savedata, fsize, 1, f);
+        fclose(f);
+        node_options.savedata_type = TOX_SAVEDATA_TYPE_TOX_SAVE;
+        node_options.savedata_data = savedata;
+        node_options.savedata_length = fsize;
+        tox_c_instance = tox_new(&node_options, NULL);
+        free(savedata);
+    } else {
+        tox_c_instance = tox_new(&node_options, NULL);
+    }
+    /* this->tox_c_instance = tox_new(&node_options, NULL); */
     this->user_name = new std::string("test dev build");
     this->user_status = new std::string("test dev build");
     dht_node nodes[] =
@@ -30,6 +56,9 @@ self_node::self_node(
                        NULL, NULL, NULL);
         tox_bootstrap(this->tox_c_instance, nodes[i].ip, nodes[i].port, key_bin, NULL);
     }
+
+     update_savedata_file();
+     
       uint8_t tox_id_bin[TOX_ADDRESS_SIZE];
     tox_self_get_address(this->tox_c_instance, tox_id_bin);
  
@@ -84,6 +113,8 @@ void self_node_cb::friend_request_cb(Tox *tox, const uint8_t *public_key, const 
 void self_node_cb::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
                 size_t length, void *user_data)
         {
+#define SEND_ASYNC_ENV(type, payload)\
+            curr_node->main_event_loop->push_event(event::async_event(type, payload))
             event::message_event *e = new event::message_event();
             e->message = message;
             e->length = length;
