@@ -1,0 +1,22 @@
+{
+    "event_id" : 
+    "event_type" : "message_recv",
+    "event_body" : {
+        "friend_number" : 
+        "message_body": 
+    }
+
+}
+
+{
+    "event_id" : "lol",
+    "event_type" : "message_sent",
+    "event_body" : {
+        "friend_number" : 10,
+        "message_body": "llll"
+    }
+
+}
+
+
+

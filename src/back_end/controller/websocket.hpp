@@ -2,11 +2,14 @@
 #pragma once
 #include <drogon/WebSocketController.h>
 #include "../../event_loop/event_loop.hpp"
+#include "../http_server.hpp"
+#include "json_helper.hpp"
 using namespace drogon;
 class EchoWebsock:public drogon::WebSocketController<EchoWebsock>
 {
 public:
     static WebSocketConnectionPtr front_conn;
+    
     virtual void handleNewMessage(const WebSocketConnectionPtr&,
                                 std::string &&,
                                 const WebSocketMessageType &)override;
