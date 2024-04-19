@@ -12,9 +12,8 @@
 #include "unistd.h"
 #include "tox.h"
 
-#define ET(x) event::event_type::x
 #define SEND_ASYNC_EV(type, payload)\
-            curr_node->main_event_loop->push_event(event::async_event(type, payload));
+            curr_node->main_event_loop->push_event(event::async_event(event::event_type::type, payload));
 namespace event {
     // do not modify exsiting event names!
     enum event_type {
@@ -23,7 +22,8 @@ namespace event {
         E_RESP_GET_FRIEND_NAME,
         E_RESP_GET_FRIEND_NUMBERS_LIST,
 // no reponse_types
-    
+        
+        E_FR_CHANGE_NAME,
         E_NEW_FR_REQ, // new friend request
         E_CONN_STATUS, // connection status change
         E_USER_NOTIFY, // notify user

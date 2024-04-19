@@ -116,7 +116,7 @@ void self_node_cb::friend_request_cb(Tox *tox,const uint8_t *public_key,const  u
                         new std::string((char*)public_key), new std::string((char*)message)
                         );
                 SEND_ASYNC_EV(
-                        ET(E_NEW_FR_REQ), x)
+                        E_NEW_FR_REQ, x)
             }
         }
 void self_node_cb::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
@@ -128,7 +128,7 @@ void self_node_cb::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSA
             e->friend_number = friend_number;
             e->type = type;
 
-            SEND_ASYNC_EV(ET(E_NEW_MESSAGE_RECV), e)
+            SEND_ASYNC_EV(E_NEW_MESSAGE_RECV, e)
             /* e
              * vent::message_event *e = new event::message_event(); */
             /* e->message = message; */
@@ -140,7 +140,7 @@ void self_node_cb::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSA
         }
 void self_node_cb::self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void *user_data)
         {
-            SEND_ASYNC_EV(ET(E_CONN_STATUS), new int(connection_status));
+            SEND_ASYNC_EV(E_CONN_STATUS, new int(connection_status));
             switch (connection_status) {
                 case TOX_CONNECTION_NONE:
                     printf("Offline\n");
@@ -206,19 +206,29 @@ void self_node_cb::handle_friend_get_status_message(event::sync_event * e) {
 void self_node_cb::friend_name_cb(
         Tox *tox, Tox_Friend_Number friend_number,
         const uint8_t name[], size_t length, void *user_data) {
+    auto r = new std::pair<uint32_t, std::string*>(friend_number, new std::string((char*)name));
+    SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 
 void self_node_cb::friend_status_cb(
         Tox *tox, Tox_Friend_Number friend_number, Tox_User_Status status, void *user_data) {
+    auto r = new std::pair<uint32_t, std::string*>(friend_number, new std::string((char*)status));
+    SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 
 
 void self_node_cb::friend_connection_status_cb(
             Tox *tox, Tox_Friend_Number friend_number, Tox_Connection connection_status, void *user_data) {
+    auto r = new std::pair<uint32_t, Tox_Connection>(friend_number, connection_status);
+    SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 void self_node_cb::friend_typing_cb(
         Tox *tox, Tox_Friend_Number friend_number, bool typing, void *user_data) {
+    auto r = new std::pair<uint32_t, bool>(friend_number, typing);
+    SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 void self_node_cb::friend_read_receipt_cb(
         Tox *tox, Tox_Friend_Number friend_number, Tox_Friend_Message_Id message_id, void *user_data) {
+    auto r = new std::pair<uint32_t, uint32_t>(friend_number, message_id);
+    SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
