@@ -66,6 +66,7 @@ void self_node::register_handlers() {
     this->main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_SENT, self_node_cb::handle_message_sent);
     this->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NUMBERS_LIST, self_node_cb::handle_friend_list_req);
     this->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NAME, self_node_cb::handle_friend_get_name);
+    this->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_STATUS_MSG, self_node_cb::handle_friend_get_status_message);
 }
 void self_node::register_tox_callbacks() {
     Tox* tox = this->tox_c_instance;
@@ -136,6 +137,20 @@ void self_node_cb::handle_friend_get_name(event::sync_event * e) {
     uint8_t name[n];
     tox_friend_get_name(curr_node->tox_c_instance, fr_num, name, NULL);
     event::sync_event *k = new event::sync_event(event::event_type::E_RESP_GET_FRIEND_NAME, new std::string((char*)name), e->event_id);
+    printf("[TOX] init event: event id is %d\n", k->event_id);
+    curr_node->main_event_loop->push_resp(k);
+
+    printf("[TOX] name sent\n");
+
+}
+
+void self_node_cb::handle_friend_get_status_message(event::sync_event * e) {
+    using namespace std;
+    uint32_t fr_num = *(uint32_t*)e->event_payload;
+    int n = tox_friend_get_status_message_size(curr_node->tox_c_instance, fr_num, NULL);
+    uint8_t status_message[n];
+    tox_friend_get_status_message(curr_node->tox_c_instance, fr_num, status_message, NULL);
+    event::sync_event *k = new event::sync_event(event::event_type::E_RESP_GET_FRIEND_STATUS_MSG, new std::string((char*)status_message), e->event_id);
     printf("[TOX] init event: event id is %d\n", k->event_id);
     curr_node->main_event_loop->push_resp(k);
 

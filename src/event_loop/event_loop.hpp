@@ -16,6 +16,7 @@ namespace event {
     // do not modify exsiting event names!
     enum event_type {
 // reponse types
+        E_RESP_GET_FRIEND_STATUS_MSG,
         E_RESP_GET_FRIEND_NAME,
         E_RESP_GET_FRIEND_NUMBERS_LIST,
 // no reponse_types

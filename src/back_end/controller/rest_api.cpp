@@ -29,6 +29,8 @@ void friends::get_friends_list(const HttpRequestPtr &req,
             x = back_end::back_end_server::main_event_loop->push_wait(x);
             std::cout << "[WEB THREAD] got fr name\n";
             friend_item["name"] = *(std::string*)x->event_payload;
+            x = back_end::back_end_server::back_end_server::main_event_loop->push_wait(new event::sync_event(event::event_type::E_RESP_GET_FRIEND_STATUS_MSG, new std::int32_t(freinds_list->second[i])));
+            friend_item["status_message"] = *(std::string*)x->event_payload;
             resp.append(friend_item);
             std::cout << friend_item << '\n';
 

@@ -65,5 +65,6 @@ namespace tox{
         static void self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, 
                 void *user_data);
         static void handle_friend_get_name(event::sync_event * e);
+        static void handle_friend_get_status_message(event::sync_event * e);
     };
 };
