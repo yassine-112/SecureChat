@@ -48,7 +48,7 @@ namespace tox{
         static  self_node *curr_node;
 
         // handlers to handle events from the event loop
-        static void handle_message_sent(event::event e);
+        static void handle_message_sent(event::async_event e);
 
         static void handle_friend_list_req(event::sync_event * e);
 
@@ -64,5 +64,6 @@ namespace tox{
 
         static void self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, 
                 void *user_data);
+        static void handle_friend_get_name(event::sync_event * e);
     };
 };

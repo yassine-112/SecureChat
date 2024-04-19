@@ -16,7 +16,8 @@ namespace event {
     // do not modify exsiting event names!
     enum event_type {
 // reponse types
-        E_RESP_GET_FRIEND_LIST,
+        E_RESP_GET_FRIEND_NAME,
+        E_RESP_GET_FRIEND_NUMBERS_LIST,
 // no reponse_types
         E_USER_NOTIFY,
         E_NEW_MESSAGE_RECV,
@@ -34,11 +35,15 @@ namespace event {
         const uint8_t *message;
         size_t length;
     };
-    struct event {
+    struct async_event {
+        async_event();
+        async_event(event_type _e_type, void * payload);
         event_type e_type;
         void * event_payload;
     };
-    struct sync_event:event {
+    struct sync_event:async_event {
+        sync_event();
+        sync_event(event_type _e_type, void * payload, uint32_t id = -1);
         uint32_t event_id;
         bool is_request;
     };
@@ -48,14 +53,14 @@ namespace event {
         sync_event* response;
     };
 
-    typedef std::function<void(event)> callback_fn;
+    typedef std::function<void(async_event)> callback_fn;
     typedef std::function<void(sync_event*)> callback_fn_resp;
 
     class event_loop {
         public:
         event_loop();
         ~event_loop();
-        bool push_event(event e);
+        bool push_event(async_event e);
         sync_event* push_wait(sync_event * e);
         void push_resp(sync_event * e);
         void subscribe_event(event_type e_type, callback_fn callback);
@@ -66,7 +71,7 @@ namespace event {
         bool main_loop_resp();
         std::map<event_type, std::vector<callback_fn>*> *callback_list;
         std::map<event_type, std::vector<callback_fn_resp>*> *callback_list_resp;
-        copper::buffered_channel<event> *main_event_queue;
+        copper::buffered_channel<async_event> *main_event_queue;
         copper::buffered_channel<sync_event*> *req_event_queue;
         std::thread event_loop_thread;
         std::vector<pending_req_item*> * pending_requests;
