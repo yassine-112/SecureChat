@@ -104,27 +104,43 @@ void self_node::register_tox_callbacks() {
     tox_callback_friend_message(tox, self_node_cb::friend_message_cb);
     tox_callback_self_connection_status(tox, self_node_cb::self_connection_status_cb);
 }
-void self_node_cb::friend_request_cb(Tox *tox, const uint8_t *public_key, const uint8_t *message, size_t length,
+void self_node_cb::friend_request_cb(Tox *tox,const uint8_t *public_key,const  uint8_t *message, size_t length,
                 void *user_data)
         {
             if (curr_node->auto_accept)
+            {
                 tox_friend_add_norequest(tox, public_key, NULL);
+            }
+            else {
+                auto x = new std::pair<std::string*, std::string*>(
+                        new std::string((char*)public_key), new std::string((char*)message)
+                        );
+                SEND_ASYNC_EV(
+                        ET(E_NEW_FR_REQ), x)
+            }
         }
 void self_node_cb::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
                 size_t length, void *user_data)
         {
-#define SEND_ASYNC_ENV(type, payload)\
-            curr_node->main_event_loop->push_event(event::async_event(type, payload))
             event::message_event *e = new event::message_event();
             e->message = message;
             e->length = length;
             e->friend_number = friend_number;
             e->type = type;
-            event::async_event ev(event::event_type::E_NEW_MESSAGE_RECV, e);
-            curr_node->main_event_loop->push_event(ev);
+
+            SEND_ASYNC_EV(ET(E_NEW_MESSAGE_RECV), e)
+            /* e
+             * vent::message_event *e = new event::message_event(); */
+            /* e->message = message; */
+            /* e->length = length; */
+            /* e->friend_number = friend_number; */
+            /* e->type = type; */
+            /* event::async_event ev(event::event_type::E_NEW_MESSAGE_RECV, e); */
+            /* curr_node->main_event_loop->push_event(ev); */
         }
 void self_node_cb::self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void *user_data)
         {
+            SEND_ASYNC_EV(ET(E_CONN_STATUS), new int(connection_status));
             switch (connection_status) {
                 case TOX_CONNECTION_NONE:
                     printf("Offline\n");
@@ -186,4 +202,23 @@ void self_node_cb::handle_friend_get_status_message(event::sync_event * e) {
 
     printf("[TOX] name sent\n");
 
+}
+void self_node_cb::friend_name_cb(
+        Tox *tox, Tox_Friend_Number friend_number,
+        const uint8_t name[], size_t length, void *user_data) {
+}
+
+void self_node_cb::friend_status_cb(
+        Tox *tox, Tox_Friend_Number friend_number, Tox_User_Status status, void *user_data) {
+}
+
+
+void self_node_cb::friend_connection_status_cb(
+            Tox *tox, Tox_Friend_Number friend_number, Tox_Connection connection_status, void *user_data) {
+}
+void self_node_cb::friend_typing_cb(
+        Tox *tox, Tox_Friend_Number friend_number, bool typing, void *user_data) {
+}
+void self_node_cb::friend_read_receipt_cb(
+        Tox *tox, Tox_Friend_Number friend_number, Tox_Friend_Message_Id message_id, void *user_data) {
 }

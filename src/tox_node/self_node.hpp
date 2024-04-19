@@ -77,19 +77,14 @@ namespace tox{
 
         static void friend_status_cb(
                 Tox *tox, Tox_Friend_Number friend_number, Tox_User_Status status, void *user_data);
-    };
 
     static void friend_connection_status_cb(
             Tox *tox, Tox_Friend_Number friend_number, Tox_Connection connection_status, void *user_data);
+
+
     static void friend_typing_cb(
             Tox *tox, Tox_Friend_Number friend_number, bool typing, void *user_data);
     static void friend_read_receipt_cb(
             Tox *tox, Tox_Friend_Number friend_number, Tox_Friend_Message_Id message_id, void *user_data);
-    static void friend_request_cb(
-            Tox *tox, const uint8_t public_key[TOX_PUBLIC_KEY_SIZE],
-            const uint8_t message[], size_t length,
-            void *user_data);
-    static void friend_message_cb(
-            Tox *tox, Tox_Friend_Number friend_number, Tox_Message_Type type,
-            const uint8_t message[], size_t length, void *user_data);
+    };
 };
