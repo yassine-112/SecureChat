@@ -84,7 +84,6 @@ void self_node_cb::friend_request_cb(Tox *tox, const uint8_t *public_key, const 
 void self_node_cb::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSAGE_TYPE type, const uint8_t *message,
                 size_t length, void *user_data)
         {
-            std::printf("ptr: %p\n", curr_node->main_event_loop);
             event::message_event *e = new event::message_event();
             e->message = message;
             e->length = length;
