@@ -10,8 +10,9 @@ export default function ChatSidebar() {
     return (
         <Flex vertical style={{maxHeight: '100vh', overflow:'hidden', borderRight: '1px solid grey'}}>
                     <UserBar avatarUrl={i} />
-                    <ChatSideBarContentSelector onChange={(value) => value == 'chat' ? setShowChat(true) : setShowChat(false)}/>
-                    { showChat ? <ChatList /> : <ContactList />}
+                     <ChatList />
                 </Flex>
     );
+                    // <ChatSideBarContentSelector onChange={(value) => value == 'chat' ? setShowChat(true) : setShowChat(false)}/>
+                    // { showChat ? <ChatList /> : <ContactList />}
 }

@@ -1,7 +1,8 @@
-import {Avatar, Badge, Button, Flex, Input, List, Popover} from 'antd';
+import {Avatar, Badge, Button, Flex, Input, List, Popover, Card} from 'antd';
 import {SearchOutlined, BellOutlined , EllipsisOutlined, CloseOutlined } from '@ant-design/icons'
 import TopBar from './TopBar';
-import { useState } from 'react';
+import { useState, useContext, useReducer } from 'react';
+import globalContext from '../context';
 
 const iconStyle = {
     margin: '0.3rem'
@@ -9,6 +10,7 @@ const iconStyle = {
 
 export default function UserBar({avatarUrl}) {
     const [searchInputVisible, setSearchInputVisible] = useState(false);
+    const {globalStat} = useContext(globalContext)
     return (
         <TopBar border={false} left={
 
@@ -20,7 +22,7 @@ export default function UserBar({avatarUrl}) {
                         <Input prefix={<SearchOutlined/>} style={{maxWidth:'200px'}} width={"60px"} addonAfter={<Button size='small' type='text' icon={<CloseOutlined/>} onClick={()=>setSearchInputVisible(false)}/>}/>}
 
                     <Popover content={<NotificationList/>} placement='bottom'>
-                        <Badge offset={['-7%', '15%']} count='4'>
+                        <Badge offset={['-7%', '15%']} count={globalStat.notifications.length}>
                             <Button style={iconStyle} icon={<BellOutlined />}/>
                         </Badge>
                     </Popover>
@@ -32,8 +34,39 @@ export default function UserBar({avatarUrl}) {
 }
 
 function NotificationList() {
+    const {globalStat} = useContext(globalContext)
+                        // [<a key="list-loadmore-edit">edit</a>, <a key="list-loadmore-more">delete</a>]}
+    const get_avatar = notification => {
+        switch(notification.class) {
+            case "friend": 
+                return <Avatar src={notification.icon_path}/>;
+            default:
+                return undefined
+        }
+    }
     return (
-        <List>
-        </List>
-    );
+        <List
+            itemLayout="horizontal"
+            dataSource={globalStat.notifications}
+            renderItem={(item) => (
+                <List.Item
+                    actions={
+                        item.actions
+                        .map( i => <a onClick={i.action_handler}>{i.action_name}</a>)
+                        .concat(item.can_delete ? [<a><CloseOutlined /></a>] : [])
+                    }
+                >
+                    <Card
+                        type="inner"
+                        bordered={false}
+                    >
+                        <Card.Meta
+                            avatar={get_avatar(item)}
+                            title={item.title}
+                            description={item.body}
+                        />
+                    </Card>
+                </List.Item>
+            )}
+        />    );
 }
