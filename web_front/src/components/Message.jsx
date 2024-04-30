@@ -13,7 +13,7 @@ export default function Message(props) {
         "maxWidth": "35%",
         }}>
             <MessageContent {...props}>
-                <MessageText text="hey how are you" />
+                <MessageText text={props.messageBody} />
             </MessageContent>
             <Flex  justify={props.isSentMessage === true ? 'right' : 'left'} style={{margin:'1% 0 1% 0'}}>
                 <Timestamp  time={'11:11 PM'}/>

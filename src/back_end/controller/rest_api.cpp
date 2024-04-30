@@ -37,7 +37,10 @@ void friends::get_friends_list(const HttpRequestPtr &req,
         }
         std::cout << "[WEB THREAD] sending fr names back\n";
         std::cout << resp << '\n';
-        callback(drogon::HttpResponse::newHttpJsonResponse(resp));
+        auto http_resp = HttpResponse::newHttpJsonResponse(resp);
+        http_resp->addHeader("Access-Control-Allow-Origin", "*");
+        http_resp->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        callback(http_resp);
         
     }
     /* fr_item["name"] = "jack"; */

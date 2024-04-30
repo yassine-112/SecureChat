@@ -28,5 +28,5 @@ add_subdirectory(c-toxcore)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/c-toxcore/toxcore")
-target_link_libraries(${PROJECT_NAME} Drogon::Drogon)
-target_link_libraries(${PROJECT_NAME} toxcore_static)
+target_link_libraries(${PROJECT_NAME} Drogon::Drogon -static)
+target_link_libraries(${PROJECT_NAME} toxcore_static -static)

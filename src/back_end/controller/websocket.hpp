@@ -9,6 +9,7 @@ class EchoWebsock:public drogon::WebSocketController<EchoWebsock>
 {
 public:
     static WebSocketConnectionPtr front_conn;
+    static bool subscribed_event;
     
     virtual void handleNewMessage(const WebSocketConnectionPtr&,
                                 std::string &&,

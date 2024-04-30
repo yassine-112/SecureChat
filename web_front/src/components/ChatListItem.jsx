@@ -4,9 +4,9 @@ import Seenstamp from "./Seenstamp";
 import Timestamp from "./Timestamp";
 
 import './ChatListItem.css'
-export default function ChatListItem({avatarUrl, chatName, lastMessage}) {
+export default function ChatListItem({avatarUrl, chatName, lastMessage, onClick, isActive}) {
     return (
-        <Flex align="center" justify="leftr" style={{padding:'0.05rem 0 0.05rem 0', cursor:'pointer', borderBottom:'1px solid grey'}} className="chatListItem">
+        <Flex onClick={onClick} align="center" justify="leftr" style={{padding:'0.05rem 0 0.05rem 0', cursor:'pointer', borderBottom:'1px solid grey'}} className={`chatListItem ${isActive ? "chatListItem-selected " : ""}`}>
             <div style={{margin:'1rem'}}>
                 <Badge dot offset={['-12%','89%' ]} status='success'>
                     <Avatar src={avatarUrl} size={{ xs: 30, sm: 35, md: 40, lg: 45, xl: 60, xxl: 100 }} />

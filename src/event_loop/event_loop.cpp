@@ -21,6 +21,17 @@ void event_loop::subscribe_event(event_type e_type, callback_fn callback) {
         this->callback_list->insert({e_type, new std::vector<callback_fn>});
     }
     this->callback_list->at(e_type)->push_back(callback);
+
+    for (auto const& x : *this->callback_list)
+    {
+        for (auto const& f: *(this->callback_list->at(x.first))) {
+            std::cout << x.first  // string (key)
+                << ':' 
+                << &f // string's value 
+                << std::endl;
+
+        }
+    }
 }
 void event_loop::subscribe_event_resp(event_type e_type, callback_fn_resp callback) {
     if (this->callback_list_resp->count(e_type) != 1) {

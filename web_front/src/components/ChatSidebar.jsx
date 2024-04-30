@@ -2,7 +2,7 @@ import { Flex } from "antd";
 import UserBar from './UserBar';
 import ChatSideBarContentSelector from './ChatSideBarContentSelector';
 import ChatList from './ChatList';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import ContactList from "./ContactList";
 import i from '../assets/user.png';
 export default function ChatSidebar() {
