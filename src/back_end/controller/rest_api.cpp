@@ -20,14 +20,14 @@ void friends::get_friends_list(const HttpRequestPtr &req,
         for (int i = 0; i < freinds_list->first; i++) {
             Json::Value friend_item;
             friend_item["number"] = std::to_string(freinds_list->second[i]);
-            std::cout << "[WEB THREAD] waiting for fr name\n";
+            LOG(INFO) << "[WEB THREAD] waiting for fr name\n";
             event::sync_event *x = new event::sync_event(
                     event::event_type::E_RESP_GET_FRIEND_NAME, new std::int32_t(freinds_list->second[i])
                         );
 
-            std::cout << "[WEB THREAD] init event of type " << x->e_type <<"\n";
+            /* std::cout << "[WEB THREAD] init event of type " << x->e_type <<"\n"; */
             x = back_end::back_end_server::main_event_loop->push_wait(x);
-            std::cout << "[WEB THREAD] got fr name\n";
+            /* std::cout << "[WEB THREAD] got fr name\n"; */
             friend_item["name"] = *(std::string*)x->event_payload;
             x = back_end::back_end_server::back_end_server::main_event_loop->push_wait(new event::sync_event(event::event_type::E_RESP_GET_FRIEND_STATUS_MSG, new std::int32_t(freinds_list->second[i])));
             friend_item["status_message"] = *(std::string*)x->event_payload;
@@ -35,8 +35,8 @@ void friends::get_friends_list(const HttpRequestPtr &req,
             std::cout << friend_item << '\n';
 
         }
-        std::cout << "[WEB THREAD] sending fr names back\n";
-        std::cout << resp << '\n';
+        LOG(INFO) << "[WEB THREAD] sending fr names back\n";
+        std::cout << '\t' << resp << '\n';
         auto http_resp = HttpResponse::newHttpJsonResponse(resp);
         http_resp->addHeader("Access-Control-Allow-Origin", "*");
         http_resp->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");

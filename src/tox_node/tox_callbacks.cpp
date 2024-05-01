@@ -2,7 +2,7 @@
 using namespace tox;
 self_node *self_node_cb::curr_node;
 void self_node_cb::register_handlers() {
-    std::printf("registring handlers\n");
+    LOG(INFO) << "registring handlers\n";
     curr_node->main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_SENT, self_node_cb::handle_message_sent);
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NUMBERS_LIST, self_node_cb::handle_friend_list_req);
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NAME, self_node_cb::handle_friend_get_name);
@@ -24,14 +24,18 @@ void self_node_cb::friend_request_cb(Tox *tox,const uint8_t *public_key,const  u
         {
             if (curr_node->auto_accept)
             {
-                printf("[TOX CALLBACK accepting fr req]\n");
+                LOG(INFO) << "[TOX CALLBACK accepting fr req]\n";
                 tox_friend_add_norequest(tox, public_key, NULL);
                 curr_node->update_savedata_file();
             }
             else {
+                char tox_id_hex[TOX_PUBLIC_KEY_SIZE*2 + 1] = {0};
+                sodium_bin2hex(tox_id_hex, sizeof(tox_id_hex), public_key, TOX_PUBLIC_KEY_SIZE);
                 auto x = new std::pair<std::string*, std::string*>(
-                        new std::string((char*)public_key), new std::string((char*)message)
+                        new std::string((char*)message), new std::string(tox_id_hex)
                         );
+                LOG(INFO) << "new friend request from: " << *(x->second)
+                    << " message: " << *(x->first) << '\n';
                 SEND_ASYNC_EV(
                         E_NEW_FR_REQ, x)
             }
@@ -60,13 +64,13 @@ void self_node_cb::self_connection_status_cb(Tox *tox, TOX_CONNECTION connection
             SEND_ASYNC_EV(E_CONN_STATUS, new int(connection_status));
             switch (connection_status) {
                 case TOX_CONNECTION_NONE:
-                    printf("Offline\n");
+                    LOG(INFO) << "Offline\n";
                     break;
                 case TOX_CONNECTION_TCP:
-                    printf("Online, using TCP\n");
+                    LOG(INFO) << "Online, using TCP\n";
                     break;
                 case TOX_CONNECTION_UDP:
-                    printf("Online, using UDP\n");
+                    LOG(INFO) << "Online, using UDP\n";
                     break;
             }
         }
@@ -87,24 +91,24 @@ void self_node_cb::handle_friend_list_req(event::sync_event * e) {
     req_e->event_payload = new std::pair<uint32_t, uint32_t*>(friends_number, friends_arr);
     req_e->event_id = e->event_id;
     req_e->is_request = false;
-    std::printf("sending response payload: %d %p, of id: %d\n", req_e->event_payload, *(int*)req_e->event_payload, req_e->event_id);
+    /* std::printf("sending response payload: %d %p, of id: %d\n", req_e->event_payload, *(int*)req_e->event_payload, req_e->event_id); */
 
     curr_node->main_event_loop->push_resp(req_e);
 }
 
 void self_node_cb::handle_friend_get_name(event::sync_event * e) {
     using namespace std;
-    printf("[TOX] handling get message name: event id is %d\n", e->event_id);
+    /* printf("[TOX] handling get message name: event id is %d\n", e->event_id); */
     uint32_t fr_num = *(uint32_t*)e->event_payload;
     int n = tox_friend_get_name_size(curr_node->tox_c_instance, fr_num, NULL);
     uint8_t name[n+1];
     tox_friend_get_name(curr_node->tox_c_instance, fr_num, name, NULL);
     name[n] = '\0';
     event::sync_event *k = new event::sync_event(event::event_type::E_RESP_GET_FRIEND_NAME, new std::string((char*)name), e->event_id);
-    printf("[TOX] init event: event id is %d\n", k->event_id);
+    /* printf("[TOX] init event: event id is %d\n", k->event_id); */
     curr_node->main_event_loop->push_resp(k);
 
-    printf("[TOX] name sent\n");
+    /* printf("[TOX] name sent\n"); */
 
 }
 
@@ -116,10 +120,10 @@ void self_node_cb::handle_friend_get_status_message(event::sync_event * e) {
     status_message[n] = '\0';
     tox_friend_get_status_message(curr_node->tox_c_instance, fr_num, status_message, NULL);
     event::sync_event *k = new event::sync_event(event::event_type::E_RESP_GET_FRIEND_STATUS_MSG, new std::string((char*)status_message), e->event_id);
-    printf("[TOX] init event: event id is %d\n", k->event_id);
+    /* printf("[TOX] init event: event id is %d\n", k->event_id); */
     curr_node->main_event_loop->push_resp(k);
 
-    printf("[TOX] name sent\n");
+    /* printf("[TOX] name sent\n"); */
 
 }
 void self_node_cb::friend_name_cb(

@@ -11,6 +11,7 @@
 #include <chrono>
 #include "unistd.h"
 #include "tox.h"
+#include <glog/logging.h>
 
 #define SEND_ASYNC_EV(type, payload)\
             curr_node->main_event_loop->push_event(event::async_event(event::event_type::type, payload));

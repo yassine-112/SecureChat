@@ -1,28 +1,61 @@
 #include "self_node.hpp"
 #include "./tox_callbacks.hpp"
 #include <string>
-using namespace tox;
-void self_node::update_savedata_file()
-{
-size_t size = tox_get_savedata_size(tox_c_instance);
-uint8_t *savedata = (uint8_t*)malloc(size);
-tox_get_savedata(tox_c_instance, savedata);
-FILE *f = fopen(savedata_tmp_filename, "wb");
-fwrite(savedata, size, 1, f);
-fclose(f);
-rename(savedata_tmp_filename, savedata_filename);
-}
-self_node::self_node(
-        event::event_loop *main_event_loop,
-        std::list<dht_node> *dht_node_list ,
-        std::string *serialization_path )
-    : main_event_loop(main_event_loop), dht_node_list(dht_node_list),  serialization_path(serialization_path)
-{
 
+using namespace tox;
+
+void self_node::update_savedata_file() {
+    size_t size = tox_get_savedata_size(tox_c_instance);
+    uint8_t *savedata = (uint8_t*)malloc(size);
+    tox_get_savedata(tox_c_instance, savedata);
+    FILE *f = fopen(savedata_tmp_filename, "wb");
+    fwrite(savedata, size, 1, f);
+    fclose(f);
+    rename(savedata_tmp_filename, savedata_filename);
+}
+
+self_node::self_node(event::event_loop *main_event_loop, 
+        std::list<dht_node> *dht_node_list ,
+        std::string *serialization_path)
+    : main_event_loop(main_event_loop), 
+    dht_node_list(dht_node_list),  
+    serialization_path(serialization_path)
+{
     tox_options_default(&node_options);
     if (enable_trace) node_options.log_callback = self_node_cb::log;
 
+    setup_options();
+    tox_c_instance = tox_new(&node_options, NULL);
+    /* this->user_name = new std::string("test dev build"); */ // TODO: get these in an other way
+    /* this->user_status = new std::string("test dev build"); */
+    node_bootstrap();
+    update_savedata_file();
+    set_tox_id();
+    connect_cb();
+}
+
+void self_node::connect_cb() {
+    self_node_cb::curr_node = this;
+    self_node_cb::register_handlers();
+    self_node_cb::register_tox_callbacks();
+}
+void self_node::set_tox_id() {
+    uint8_t tox_id_bin[TOX_ADDRESS_SIZE];
+    tox_self_get_address(this->tox_c_instance, tox_id_bin);
+
+    char tox_id_hex[TOX_ADDRESS_SIZE*2 + 1];
+    sodium_bin2hex(tox_id_hex, sizeof(tox_id_hex), tox_id_bin, sizeof(tox_id_bin));
+
+    for (size_t i = 0; i < sizeof(tox_id_hex)-1; i ++) {
+        tox_id_hex[i] = toupper(tox_id_hex[i]);
+    }
+    this->user_tox_id = new std::string(tox_id_hex);
+    LOG(INFO) << "id: "  << tox_id_hex << '\n';
+
+}
+bool self_node::setup_options() {
     FILE *f = fopen(savedata_filename, "rb");
+    node_first_run = f == NULL;
     if (f) {
         fseek(f, 0, SEEK_END);
         long fsize = ftell(f);
@@ -33,14 +66,10 @@ self_node::self_node(
         node_options.savedata_type = TOX_SAVEDATA_TYPE_TOX_SAVE;
         node_options.savedata_data = savedata;
         node_options.savedata_length = fsize;
-        tox_c_instance = tox_new(&node_options, NULL);
-        free(savedata);
-    } else {
-        tox_c_instance = tox_new(&node_options, NULL);
     }
-    /* this->tox_c_instance = tox_new(&node_options, NULL); */
-    this->user_name = new std::string("test dev build");
-    this->user_status = new std::string("test dev build");
+    return f != NULL;
+}
+void self_node::node_bootstrap() {
     dht_node nodes[] =
     {
         {"85.143.221.42",                      33445, "DA4E4ED4B697F2E9B000EEFE3A34B554ACD3F45F5C96EAEA2516DD7FF9AF7B43"},
@@ -52,32 +81,17 @@ self_node::self_node(
         {"205.185.115.131",                       53, "3091C6BEB2A993F1C6300C16549FABA67098FF3D62C6D253828B531470B53D68"},
         {"tox.kurnevsky.net",                  33445, "82EF82BA33445A1F91A7DB27189ECFC0C013E06E3DA71F588ED692BED625EC23"}
     };
-     for (size_t i = 0; i < sizeof(nodes)/sizeof(dht_node); i ++) {
+    for (size_t i = 0; i < sizeof(nodes)/sizeof(dht_node); i ++) {
         unsigned char key_bin[TOX_PUBLIC_KEY_SIZE];
         sodium_hex2bin(key_bin, sizeof(key_bin), nodes[i].key_hex, sizeof(nodes[i].key_hex)-1,
-                       NULL, NULL, NULL);
+                NULL, NULL, NULL);
         tox_bootstrap(this->tox_c_instance, nodes[i].ip, nodes[i].port, key_bin, NULL);
     }
 
-     update_savedata_file();
-     
-      uint8_t tox_id_bin[TOX_ADDRESS_SIZE];
-    tox_self_get_address(this->tox_c_instance, tox_id_bin);
- 
-    char tox_id_hex[TOX_ADDRESS_SIZE*2 + 1];
-    sodium_bin2hex(tox_id_hex, sizeof(tox_id_hex), tox_id_bin, sizeof(tox_id_bin));
- 
-    for (size_t i = 0; i < sizeof(tox_id_hex)-1; i ++) {
-        tox_id_hex[i] = toupper(tox_id_hex[i]);
-    }
-    this->user_tox_id = new std::string(tox_id_hex);
-    std::printf("id: %s\n", tox_id_hex);
-    self_node_cb::curr_node = this;
-    self_node_cb::register_handlers();
-    self_node_cb::register_tox_callbacks();
+
 }
 self_node::~self_node() {
-    printf("killing tox instance\n");
+    LOG(INFO) << "killing tox instance\n";
     tox_kill(this->tox_c_instance);
 }
 void self_node::main_loop() {

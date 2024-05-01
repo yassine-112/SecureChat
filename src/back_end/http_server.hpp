@@ -2,6 +2,7 @@
 #include <drogon/drogon.h>
 #include <thread>
 #include "../event_loop/event_loop.hpp"
+#include <glob.h>
 
 namespace back_end {
  class back_end_server {

@@ -32,11 +32,12 @@ void EchoWebsock::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr,std::
 }
 void EchoWebsock::handleNewConnection(const HttpRequestPtr &req,const WebSocketConnectionPtr &wsConnPtr)
 {
-    std::cout << "[BACKEND] new websocket connection\n";
+    LOG(INFO) << "[BACKEND] new websocket connection\n";
     front_conn = wsConnPtr;
     if (!subscribed_event) {
-        back_end::back_end_server::main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_RECV, handle_new_msg);
         subscribed_event = true;
+        back_end::back_end_server::main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_RECV, handle_new_msg);
+        back_end::back_end_server::main_event_loop->subscribe_event(event::event_type::E_NEW_FR_REQ, handle_new_friend_request);
     }
 }
 void EchoWebsock::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr)
@@ -44,10 +45,18 @@ void EchoWebsock::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr
     //unsubscribe
 }
 void EchoWebsock::handle_new_msg(event::async_event e) {
-    std::cout << "[WEBSOCKET]websocket backend sending new message to front\n";
+    LOG(INFO) << "[WEBSOCKET]websocket backend sending new message to front\n";
     event::message_event* ev = (event::message_event*)e.event_payload;
     front_conn->send(
         json_helper::message_recv( (char*)ev->message, ev->friend_number)
             );
 }
 
+void EchoWebsock::handle_new_friend_request(event::async_event e) {
+    LOG(INFO) << "[WEBSOCKET]websocket backend sending new friend request to front\n";
+    /* event::message_event* ev = (event::message_event*)e.event_payload; */
+    std::pair<std::string*, std::string*> *ev = (std::pair<std::string*, std::string*> *) e.event_payload;
+    front_conn->send(
+        json_helper::friend_req_recv( *(ev->first), *(ev->second))
+            );
+}

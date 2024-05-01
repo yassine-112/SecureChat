@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <thread>
 #include "../event_loop/event_loop.hpp"
+#include <glog/logging.h>
 
 namespace tox{
     struct dht_node {
@@ -24,6 +25,10 @@ namespace tox{
             event::event_loop *main_event_loop;
         private:
             friend class self_node_cb;
+            void node_bootstrap();
+            bool setup_options();
+            void set_tox_id();
+            void connect_cb();
             std::string * serialization_path;
             std::string * user_name;
             std::string * user_status;
@@ -37,12 +42,10 @@ namespace tox{
             void register_handlers(); 
             void register_tox_callbacks();
             void update_savedata_file();
-            bool auto_accept = true;
+            bool auto_accept = false;
             bool enable_trace = false;
             const char *savedata_filename = "savedata.tox";
             const char *savedata_tmp_filename = "savedata.tox.tmp";
-
-        // handlers to handle events from the event loop
 
     };
 };

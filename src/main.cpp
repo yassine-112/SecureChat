@@ -7,11 +7,12 @@
 #include "event_loop/event_loop.hpp"
 #include "tox_node/self_node.hpp"
 #include "back_end/http_server.hpp"
+#include <glog/logging.h>
 
 
 void handle_msg(event::async_event _e) {
     event::message_event *e = (event::message_event*)_e.event_payload;
-    std::printf("New message: %s from friend: %d\n", e->message, e->friend_number);
+    LOG(INFO) << "New message: " << e->message << "from friend: "<< e->friend_number << '\n';
 }
 
 /* void msg_interface(event::event_loop *l) { */
@@ -34,7 +35,13 @@ void handle_msg(event::async_event _e) {
 /*     } */
 /* } */
 
-int main() {
+int main(int argc, char* argv[]) {
+    google::InitGoogleLogging(argv[0]);
+
+    FLAGS_logtostderr = 1;
+
+    LOG(INFO) << "Starting chatapp\n";
+
     event::event_loop *main_event_loop = new event::event_loop();
     std::pair<std::thread, std::thread> main_loop_threads = main_event_loop->spawn_thread();
     back_end::back_end_server *web_serve = new back_end::back_end_server(main_event_loop);
@@ -50,7 +57,7 @@ int main() {
 
     getchar();
     node->stop_instance();
-    std::cout << "stopped tox\n";
+    LOG(INFO) << "stopped tox\n";
 
     p2p_thread.join();
     main_loop_threads.first.join();

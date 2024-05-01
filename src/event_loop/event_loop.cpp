@@ -13,7 +13,7 @@ event_loop::~event_loop() {
     delete this->callback_list;
 }
 bool event_loop::push_event(async_event e) {
-    std::printf("event added to event loop\n");
+    LOG(INFO) << "event added to event loop\n";
     return this->main_event_queue->push(e);
 }
 void event_loop::subscribe_event(event_type e_type, callback_fn callback) {
@@ -25,7 +25,7 @@ void event_loop::subscribe_event(event_type e_type, callback_fn callback) {
     for (auto const& x : *this->callback_list)
     {
         for (auto const& f: *(this->callback_list->at(x.first))) {
-            std::cout << x.first  // string (key)
+            std::cout << '\t' << x.first  // string (key)
                 << ':' 
                 << &f // string's value 
                 << std::endl;
@@ -39,11 +39,11 @@ void event_loop::subscribe_event_resp(event_type e_type, callback_fn_resp callba
     }
     this->callback_list_resp->at(e_type)->push_back(callback);
 
-    std::printf("list resp callbacks -------------------------\n");
+    LOG(INFO) << "list resp callbacks -------------------------\n";
     for (auto const& x : *this->callback_list_resp)
     {
         for (auto const& f: *(this->callback_list_resp->at(x.first))) {
-            std::cout << x.first  // string (key)
+            std::cout << '\t' << x.first  // string (key)
                 << ':' 
                 << &f // string's value 
                 << std::endl;
@@ -53,8 +53,8 @@ void event_loop::subscribe_event_resp(event_type e_type, callback_fn_resp callba
 }
 
 struct sync_event* event_loop::push_wait(sync_event * e) {
-    std::printf("added push wait req");
-    std::printf("this is: %p\n", this);
+    LOG(INFO) << "added push wait req";
+    LOG(INFO) << "this is: " << this << '\n';
 
     e->event_id = std::rand();
     e->is_request = true;
@@ -67,20 +67,19 @@ struct sync_event* event_loop::push_wait(sync_event * e) {
     req_item->response = nullptr;
 
     this->pending_requests->push_back(req_item);
-    std::printf("locking push wait\n");
+    LOG(INFO) << "locking push wait\n";
     mutex_lock->lock();
-    std::printf("locking 1 push wait\n");
+    LOG(INFO) << "locking 1 push wait\n";
     mutex_lock->lock();
-    std::printf("push unlocked");
+    LOG(INFO) << "push unlocked";
     return req_item->response;
 }
 
 bool event_loop::main_loop() {
 
-    std::printf("main event loop tid: %d\n", gettid());
+    LOG(INFO) << "main event loop tid: " << gettid() << '\n';
     
     while (!this->main_event_queue->is_read_closed() ) {
-        std::printf("looping so  hard omg1\n");
         std::optional<async_event> curr_e_opt = this->main_event_queue->pop();
         if (curr_e_opt) {
             async_event curr_e = curr_e_opt.value();
@@ -99,13 +98,12 @@ bool event_loop::main_loop() {
 bool event_loop::main_loop_resp() {
     while(!this->req_event_queue->is_read_closed()) {
         std::optional<sync_event*> curr_e_opt_sync = this->req_event_queue->pop();
-        std::printf("looping so  hard omg2 resp\n");
         if(curr_e_opt_sync) {
             sync_event *curr_e = curr_e_opt_sync.value();
             if (curr_e->is_request) {
-                std::printf("[EVENT LOOP] looking for callbacks of type %d: id: %d\n", curr_e->e_type, curr_e->event_id);
+                LOG(INFO) << "[EVENT LOOP] looking for callbacks of type " << curr_e->e_type << "id: " << curr_e->event_id << '\n';
                 if (this->callback_list_resp->count(curr_e->e_type) != 0) {
-                std::printf("[EVENT LOOP]dispatching req event %d\n", curr_e->e_type);
+                LOG(INFO) << "[EVENT LOOP]dispatching req event " << curr_e->e_type << '\n';
                     std::vector<callback_fn_resp> *target_callback_list = this->callback_list_resp->at(curr_e->e_type);
                     for (callback_fn_resp cb : *target_callback_list) {
                         cb(curr_e);
@@ -113,9 +111,9 @@ bool event_loop::main_loop_resp() {
             }
             } else {
                 for (pending_req_item* r : *this->pending_requests) {
-                    std::printf("[EVENT LOOP] got pending req %d, currently working on %d\n", r->event_id, curr_e->event_id);
+                    LOG(INFO) << "[EVENT LOOP] got pending req " << r->event_id << ", currently working on " << curr_e->event_id << '\n';
                     if (r->event_id == curr_e->event_id) {
-                        std::printf("unlocking a response, %p\n", curr_e->event_payload);
+                        LOG(INFO) << "unlocking a response, " << curr_e->event_payload << '\n';
                         r->response = curr_e;
                         r->lock->unlock();
                     }
@@ -137,13 +135,13 @@ event::async_event::async_event(){}
 event::async_event::async_event(event_type _e_type, void * payload)
     :e_type(_e_type), event_payload(payload)
 {
-    std::printf("[EVENT LOOP] craeting new event of type %d\n", _e_type);
+    LOG(INFO) << "[EVENT LOOP] craeting new event of type "<< _e_type << '\n';
 }
 
 event::sync_event::sync_event(){}
 event::sync_event::sync_event(event_type _e_type, void * payload, u_int32_t id)
     :async_event(_e_type,payload), event_id(id)
 {
-    std::printf("[EVENT LOOP] craeting new event of type %d\n", e_type);
+    LOG(INFO) << "[EVENT LOOP] craeting new event of type %d\n" << e_type << '\n';
 }
 

@@ -25,30 +25,19 @@ const initGlobal = {
     },
     "input_text": "",
     "notifications" : [
-        {
-            "id": 666,
-            "title": "A new friend request",
-            "body": "From user6666",
-            "class": "friend",
-            "icon_path": 'https://s.yimg.com/ny/api/res/1.2/X.dYzBVwO1x4OmeMl_cLHA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTY0MDtoPTk5Mg--/https://s.yimg.com/os/creatr-uploaded-images/2021-07/afa7d990-ef2a-11eb-bcf7-70ebfc0459ed',
-            "actions": [
-                {"action_name": "accept", "action_handler": () => console.log("handler")},
-                {"action_name": "deny", "action_handler": () => console.log("handler")}
-            ],
-            "can_delete": false
-        },
+        // {
+        //     "id": 666,
+        //     "title": "A new friend request",
+        //     "body": "From user6666",
+        //     "class": "friend",
+        //     "icon_path": 'https://s.yimg.com/ny/api/res/1.2/X.dYzBVwO1x4OmeMl_cLHA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTY0MDtoPTk5Mg--/https://s.yimg.com/os/creatr-uploaded-images/2021-07/afa7d990-ef2a-11eb-bcf7-70ebfc0459ed',
+        //     "actions": [
+        //         {"action_name": "accept", "action_handler": () => console.log("handler")},
+        //         {"action_name": "deny", "action_handler": () => console.log("handler")}
+        //     ],
+        //     "can_delete": false
+        // },
 
-        {
-            "id": 777,
-            "title": "test notification",
-            "body": "content",
-            "class": "friend",
-            "icon_path": 'https://s.yimg.com/ny/api/res/1.2/X.dYzBVwO1x4OmeMl_cLHA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTY0MDtoPTk5Mg--/https://s.yimg.com/os/creatr-uploaded-images/2021-07/afa7d990-ef2a-11eb-bcf7-70ebfc0459ed',
-            "actions": [
-                {"action_name": "accept", "action_handler": () => console.log("handler")}
-            ],
-            "can_delete": true
-        }
     ],
 
 
