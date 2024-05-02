@@ -3,6 +3,21 @@
 #include "../../event_loop/event_loop.hpp"
 
 using namespace api;
+void friends::get_tox_id(const HttpRequestPtr &req,
+               std::function<void (const HttpResponsePtr &)> &&callback) {
+    LOG(INFO) << "GOT REQUEST USER TOX ID\n";
+    event::sync_event* e = new event::sync_event();
+    e->e_type = event::event_type::E_RESP_GET_USER_ID;
+    e->is_request = true;
+    e->event_payload = nullptr;
+    e = back_end::back_end_server::main_event_loop->push_wait(e);
+    Json::Value resp;
+    resp["id"] = *(std::string*)e->event_payload;
+    auto http_resp = HttpResponse::newHttpJsonResponse(resp);
+    http_resp->addHeader("Access-Control-Allow-Origin", "*");
+    http_resp->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    callback(http_resp);
+}
 void friends::get_friends_list(const HttpRequestPtr &req,
                std::function<void (const HttpResponsePtr &)> &&callback) {
 

@@ -21,6 +21,7 @@ namespace tox{
 
             static void handle_friend_get_status_message(event::sync_event * e);
             static void handle_friend_accept(event::async_event e);
+            static void handle_get_user_id(event::sync_event *e);
 
 
             // tox callbacks: put events in the event loop

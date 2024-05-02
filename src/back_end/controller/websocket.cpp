@@ -47,8 +47,10 @@ void EchoWebsock::handleNewConnection(const HttpRequestPtr &req,const WebSocketC
     front_conn = wsConnPtr;
     if (!subscribed_event) {
         subscribed_event = true;
+        LOG(INFO) << "[BACKEND] Registring backend ws callbacks\n";
         back_end::back_end_server::main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_RECV, handle_new_msg);
         back_end::back_end_server::main_event_loop->subscribe_event(event::event_type::E_NEW_FR_REQ, handle_new_friend_request);
+        back_end::back_end_server::main_event_loop->subscribe_event(event::event_type::E_CONN_STATUS, handle_tox_status);
     }
 }
 void EchoWebsock::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr)
@@ -69,5 +71,11 @@ void EchoWebsock::handle_new_friend_request(event::async_event e) {
     std::pair<std::string*, std::string*> *ev = (std::pair<std::string*, std::string*> *) e.event_payload;
     front_conn->send(
         json_helper::friend_req_recv( *(ev->first), *(ev->second))
+            );
+}
+void EchoWebsock::handle_tox_status(event::async_event e) {
+    LOG(INFO) << "Sending tox status to front end\n";
+    front_conn->send(
+            json_helper::tox_status(*(std::string*)e.event_payload)
             );
 }

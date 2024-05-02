@@ -25,4 +25,15 @@ namespace json_helper {
         LOG(INFO) << v.toStyledString();
         return v.toStyledString();
     }
+    std::string tox_status(std::string status)  {
+        Json::Value v;
+        Json::Value body;
+        v["event_id"] = std::rand();
+        v["event_type"] = "tox_status";
+        body["status"] = status;
+        v["event_body"] = body;
+        LOG(INFO) << v.toStyledString();
+        return v.toStyledString();
+
+    }
 };

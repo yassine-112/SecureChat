@@ -15,7 +15,7 @@ const initGlobal = {
     "user_online_status": "",
     "user_tox_id": "",
     "user_avatar_url": user_url,
-    "tox_status": "",
+    "tox_status": "connecting",
     "friend_list": [
         {"name": "test user", "number": -99}
     ],
@@ -55,6 +55,14 @@ const initGlobal = {
 
 function reducer(state, action) {
     switch (action.type) {
+        case 'SET_USER_ID':
+        return {
+                ...state, user_tox_id: action.id,
+            }
+        case 'SET_TOX_STATUS':
+        return {
+                ...state, tox_status: action.status,
+            }
         case 'DEL_NOTIFICATION':
             return {
                 ...state, notifications: state["notifications"].filter(e => e.id != action.id)
@@ -114,6 +122,12 @@ function App() {
                 let json = JSON.parse(message.data)
                 if (json.event_type){
                     switch(json.event_type){
+                        case "tox_status":
+                            console.log(`got tox status: ${json.event_body.status}`)
+                            let s = (json.event_body.status == "TOX_CONNECTION_NONE") ? "error" : "online" 
+                            console.log(s);
+                            dispatch({type: 'SET_TOX_STATUS', status: s})
+                            break;
                         case "message_recv":
                             console.log(`got message ${json.event_body.message_body}`)
                             dispatch({type: 'NEW_MESSAGE', number: json.event_body.friend_number, message_body: json.event_body.message_body, is_sent:false})
@@ -156,6 +170,11 @@ function App() {
             .then(response => response.json())
             .then(json => {
             dispatch({type: 'SET_FRIEND_LIST', friend_list:json})
+            })
+        fetch('http://127.0.0.1:8080/get_user_id')
+            .then(response => response.json())
+            .then(json => {
+                dispatch({type: 'SET_USER_ID', id:json.id})
             })
     }, [])
 

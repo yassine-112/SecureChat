@@ -9,7 +9,22 @@ void self_node_cb::register_handlers() {
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NUMBERS_LIST, self_node_cb::handle_friend_list_req);
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NAME, self_node_cb::handle_friend_get_name);
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_STATUS_MSG, self_node_cb::handle_friend_get_status_message);
+    curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_USER_ID, self_node_cb::handle_get_user_id);
 }
+void self_node_cb::handle_get_user_id(event::sync_event *e) {
+    LOG(INFO) << "!!!!!!!!!!!!!!!push user tox id resp " << curr_node->user_tox_id << '\n';
+
+    event::sync_event* req_e = new event::sync_event();
+    req_e->e_type = event::event_type::E_RESP_GET_USER_ID;
+    req_e->event_payload = new std::string(*curr_node->user_tox_id);
+    req_e->event_id = e->event_id;
+    req_e->is_request = false;
+    /* std::printf("sending response payload: %d %p, of id: %d\n", req_e->event_payload, *(int*)req_e->event_payload, req_e->event_id); */
+
+    curr_node->main_event_loop->push_resp(req_e);
+}
+
+
 void self_node_cb::register_tox_callbacks() {
     Tox* tox = curr_node->tox_c_instance;
     tox_callback_friend_request(tox, self_node_cb::friend_request_cb);
@@ -68,7 +83,8 @@ void self_node_cb::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSA
         }
 void self_node_cb::self_connection_status_cb(Tox *tox, TOX_CONNECTION connection_status, void *user_data)
         {
-            SEND_ASYNC_EV(E_CONN_STATUS, new int(connection_status));
+            
+            SEND_ASYNC_EV(E_CONN_STATUS, new std::string(tox_connection_to_string(connection_status)));
             switch (connection_status) {
                 case TOX_CONNECTION_NONE:
                     LOG(INFO) << "Offline\n";

@@ -22,6 +22,7 @@ namespace event {
         E_RESP_GET_FRIEND_STATUS_MSG,
         E_RESP_GET_FRIEND_NAME,
         E_RESP_GET_FRIEND_NUMBERS_LIST,
+        E_RESP_GET_USER_ID,
 // no reponse_types
         
         E_ACCEPT_FR_REQ,

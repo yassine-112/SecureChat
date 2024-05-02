@@ -42,7 +42,7 @@ const ToxConnectionStatus = () => {
     return (
         <div style={{"width": "50%"}}>
             <Alert style={{margin: '0.2rem 0'}} message={"Tox status: " + globalStat.tox_status} type={status_to_mtypes[globalStat.tox_status]} showIcon />
-            <Alert message={"your TOX ID is: " + globalStat.user_tox_id} type="info" showIcon/>
+            <Alert message={"TOX ID: " + globalStat.user_tox_id} type="info" showIcon/>
         </div>
     )
 }
