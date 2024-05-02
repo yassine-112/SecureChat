@@ -4,6 +4,8 @@
 #include "../../event_loop/event_loop.hpp"
 #include "../http_server.hpp"
 #include "json_helper.hpp"
+#include "tox.h"
+#include "sodium.h"
 #include <glob.h>
 
 using namespace drogon;

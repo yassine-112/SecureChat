@@ -5,8 +5,17 @@ import MessagingWindow from './components/MessagingWindow';
 import { useState, createContext, useEffect, useReducer, useRef } from 'react';
 import RecipientPropertiesSidebar from './components/RecipientPropertiesSidebar';
 import globalContext from './context';
+import UserInfoWindow from './components/UserInfoWindow';
+import user_url from './assets/user.png'
+import { friend_request_response } from './utils';
 
 const initGlobal = {
+    "user_name": "",
+    "user_status": "",
+    "user_online_status": "",
+    "user_tox_id": "",
+    "user_avatar_url": user_url,
+    "tox_status": "",
     "friend_list": [
         {"name": "test user", "number": -99}
     ],
@@ -46,6 +55,22 @@ const initGlobal = {
 
 function reducer(state, action) {
     switch (action.type) {
+        case 'DEL_NOTIFICATION':
+            return {
+                ...state, notifications: state["notifications"].filter(e => e.id != action.id)
+            }
+        case 'NEW_NOTIFICATION':
+            return {
+                ...state, notifications: state["notifications"].concat([action.notification])
+            }
+        case 'SET_USER_ONLINE_STATUS':
+            return {
+                ...state, user_online_status: action.status
+            }
+        case 'SET_USER_INFO':
+            return {
+                ...state, user_name: action.user_name, user_status: action.user_status
+            }
         case 'SET_FRIEND_FOCUSED':
             return {
                 ...state, "currentFocusedFriend": action.number
@@ -72,11 +97,12 @@ function reducer(state, action) {
             return state
     }
 }
-
 function App() {
     const [showRecipientPropertiesSidebar, setRecipientPropertiesSidebar] = useState(false);
     const [globalStat, dispatch] = useReducer(reducer, initGlobal)
-    const ws = useRef(null);
+
+    // THIS IS BAD PRACTICE, BUT I GOT NO TIME TO THINK FOR A BETTER SOLUTION DAMN IT!!!!!
+    window.ws = useRef(null);
 
     useEffect(() => {
         ws.current = new WebSocket("ws://127.0.0.1:8080/echo");
@@ -86,11 +112,31 @@ function App() {
             console.log(message)
             try {
                 let json = JSON.parse(message.data)
-                if (json.event_type && json.event_type == "message_recv") {
-                    console.log(`got message ${json.event_body.message_body}`)
-                    dispatch({type: 'NEW_MESSAGE', number: json.event_body.friend_number, message_body: json.event_body.message_body, is_sent:false})
-                }
+                if (json.event_type){
+                    switch(json.event_type){
+                        case "message_recv":
+                            console.log(`got message ${json.event_body.message_body}`)
+                            dispatch({type: 'NEW_MESSAGE', number: json.event_body.friend_number, message_body: json.event_body.message_body, is_sent:false})
+                        break;
+                        case 'friend_req_recv':
+                            console.log(`got new friend req ${json.event_body}`)
+                            dispatch({
+                                type:'NEW_NOTIFICATION',
+                                notification: {
+                                    id: json.event_id,
+                                    title: "A new friend request",
+                                    body: `${json.event_body.message} from ${json.event_body.public_key}`,
+                                    class: 'friend',
+                                    actions: [
+                                        {"action_name": "accept", "action_handler": () => friend_request_response(json.event_body.public_key)},
+                                        {"action_name": "deny", "action_handler": () => dispatch({type:'DEL_NOTIFICATION', id:json.event_id})}
+                                    ]
 
+                                }
+                            })
+                    }
+
+                }
             } catch(e) {
 
             }
@@ -144,7 +190,13 @@ function App() {
                 <ChatSidebar />
             </Col>
             <Col span={18}>
-                <MessagingWindow messageSentBtnHandler={messageSentBtnHandler} defaultView={globalStat.currentFocusedFriend == -1} showSideBarToggle={ () => setRecipientPropertiesSidebar(!showRecipientPropertiesSidebar) }/>
+                    {
+                        globalStat.currentFocusedFriend == -1 ? 
+                            <UserInfoWindow/> : 
+                            <MessagingWindow messageSentBtnHandler={messageSentBtnHandler} 
+                                defaultView={globalStat.currentFocusedFriend == -1} 
+                                showSideBarToggle={ () => setRecipientPropertiesSidebar(!showRecipientPropertiesSidebar) }/>
+                    }
             </Col>
                 <Drawer title="Contact Info" onClose={() => setRecipientPropertiesSidebar(false)} open={showRecipientPropertiesSidebar}>
                         <RecipientPropertiesSidebar />

@@ -4,6 +4,8 @@ self_node *self_node_cb::curr_node;
 void self_node_cb::register_handlers() {
     LOG(INFO) << "registring handlers\n";
     curr_node->main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_SENT, self_node_cb::handle_message_sent);
+    curr_node->main_event_loop->subscribe_event(event::event_type::E_ACCEPT_FR_REQ, self_node_cb::handle_friend_accept);
+
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NUMBERS_LIST, self_node_cb::handle_friend_list_req);
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NAME, self_node_cb::handle_friend_get_name);
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_STATUS_MSG, self_node_cb::handle_friend_get_status_message);
@@ -18,6 +20,11 @@ void self_node_cb::register_tox_callbacks() {
     tox_callback_friend_connection_status(tox, self_node_cb::friend_connection_status_cb);
     tox_callback_friend_typing(tox, self_node_cb::friend_typing_cb);
     tox_callback_friend_read_receipt(tox, self_node_cb::friend_read_receipt_cb);
+}
+void self_node_cb::handle_friend_accept(event::async_event e) {
+    LOG(INFO) << "Got accept req event";
+    tox_friend_add_norequest(curr_node->tox_c_instance, (uint8_t*) e.event_payload, NULL);
+    // TODO CHECK ERRORS
 }
 void self_node_cb::friend_request_cb(Tox *tox,const uint8_t *public_key,const  uint8_t *message, size_t length,
                 void *user_data)

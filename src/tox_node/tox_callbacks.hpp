@@ -20,6 +20,7 @@ namespace tox{
             static void handle_friend_get_name(event::sync_event * e);
 
             static void handle_friend_get_status_message(event::sync_event * e);
+            static void handle_friend_accept(event::async_event e);
 
 
             // tox callbacks: put events in the event loop

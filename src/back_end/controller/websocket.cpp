@@ -23,6 +23,17 @@ void EchoWebsock::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr,std::
         send_ev->message = msg_buffer;
         send_ev->type = TOX_MESSAGE_TYPE_NORMAL;
         back_end::back_end_server::main_event_loop->push_event(event::async_event(event::event_type::E_NEW_MESSAGE_SENT, send_ev));
+    } else if (e["event_type"].asString() == "request_accept" ){
+        event::async_event send_ev = event::async_event();
+        send_ev.e_type = event::event_type::E_ACCEPT_FR_REQ;
+        send_ev.event_payload = (uint8_t*) malloc(TOX_PUBLIC_KEY_SIZE * sizeof(uint8_t));
+        sodium_hex2bin((uint8_t*)send_ev.event_payload , TOX_PUBLIC_KEY_SIZE, e["event_body"]["public_key"].asCString(), e["event_body"]["public_key"].asString().length(), NULL, NULL, NULL);
+        LOG(INFO) << "Sending event to accept friend request with public key: ";
+        for (int i = 0; i < TOX_PUBLIC_KEY_SIZE; i++) {
+            std::printf("%02x", ((uint8_t*)send_ev.event_payload)[i] );
+        }
+        printf("\n");
+        back_end::back_end_server::main_event_loop->push_event(send_ev);
     }
 
 

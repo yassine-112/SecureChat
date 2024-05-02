@@ -10,11 +10,12 @@ const iconStyle = {
 
 export default function UserBar({avatarUrl}) {
     const [searchInputVisible, setSearchInputVisible] = useState(false);
-    const {globalStat} = useContext(globalContext)
+    const {globalStat, dispatch} = useContext(globalContext)
     return (
         <TopBar border={false} left={
 
-            <Avatar size={{ xs: 30, sm: 35, md: 40, lg: 45, xl: 50, xxl: 100 }} src={avatarUrl} />
+            <Avatar onClick={() => dispatch({type: 'SET_FRIEND_FOCUSED', number: -1})} style={{cursor: 'pointer'}}size={{ xs: 30, sm: 35, md: 40, lg: 45, xl: 50, xxl: 100 }} src={avatarUrl} />
+        
         }
         right={
                 <Flex align='center'>

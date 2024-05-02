@@ -24,6 +24,7 @@ namespace event {
         E_RESP_GET_FRIEND_NUMBERS_LIST,
 // no reponse_types
         
+        E_ACCEPT_FR_REQ,
         E_FR_CHANGE_NAME,
         E_NEW_FR_REQ, // new friend request
         E_CONN_STATUS, // connection status change
