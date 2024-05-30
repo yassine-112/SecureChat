@@ -25,6 +25,7 @@ public:
     static void handle_new_msg(event::async_event e);
     static void handle_new_friend_request(event::async_event e);
     static void handle_tox_status(event::async_event e);
+    static void handle_friend_name_change(event::async_event e);
     WS_PATH_LIST_BEGIN
     //list path definitions here;
     WS_PATH_ADD("/echo");

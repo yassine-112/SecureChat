@@ -167,24 +167,24 @@ void self_node_cb::friend_name_cb(
 void self_node_cb::friend_status_cb(
         Tox *tox, Tox_Friend_Number friend_number, Tox_User_Status status, void *user_data) {
     auto r = new std::pair<uint32_t, Tox_User_Status>(friend_number, status);
-    SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
+//    SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 
 
 void self_node_cb::friend_connection_status_cb(
             Tox *tox, Tox_Friend_Number friend_number, Tox_Connection connection_status, void *user_data) {
     auto r = new std::pair<uint32_t, Tox_Connection>(friend_number, connection_status);
-    SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
+ //   SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 void self_node_cb::friend_typing_cb(
         Tox *tox, Tox_Friend_Number friend_number, bool typing, void *user_data) {
     auto r = new std::pair<uint32_t, bool>(friend_number, typing);
-    SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
+  //  SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 void self_node_cb::friend_read_receipt_cb(
         Tox *tox, Tox_Friend_Number friend_number, Tox_Friend_Message_Id message_id, void *user_data) {
     auto r = new std::pair<uint32_t, uint32_t>(friend_number, message_id);
-    SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
+   // SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 void self_node_cb::log(Tox *tox, Tox_Log_Level level, const char *file, uint32_t line, const char *func,
                         const char *message, void *user_data) {

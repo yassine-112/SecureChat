@@ -2,6 +2,7 @@
 #include "json/json.h"
 #include <glog/logging.h>
 
+// A better solution is to define all format in a xml file and use a fill up function (just saying)
 namespace json_helper {
     std::string message_recv(std::string message, uint32_t friend_num) {
         Json::Value v;
@@ -35,5 +36,18 @@ namespace json_helper {
         LOG(INFO) << v.toStyledString();
         return v.toStyledString();
 
+    }
+
+    std::string friend_name_change(uint32_t number, std::string new_name) {
+        Json::Value v;
+        Json::Value body;
+        v["event_id"] = std::rand();
+        v["event_type"] = "friend_changed_name";
+        body["number"] = std::to_string(number);
+        body["name"] = new_name;
+        v["event_body"] = body;
+        LOG(INFO) << v.toStyledString();
+        return v.toStyledString();
+        
     }
 };

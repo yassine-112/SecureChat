@@ -56,6 +56,10 @@ const initGlobal =  {
 
 function reducer(state, action) {
     switch (action.type) {
+        case 'UPDATE_FRIEND_NAME':
+            return {
+                ...state, friend_list: state.friend_list.map(fr => (fr.number === action.number) ? {...fr, name: action.name} :fr)
+            }
         case 'SET_USER_ID':
         return {
                 ...state, user_tox_id: action.id,
@@ -128,6 +132,10 @@ function App() {
                 let json = JSON.parse(message.data)
                 if (json.event_type){
                     switch(json.event_type){
+                        case "friend_changed_name":
+                            dispatch({type:'UPDATE_FRIEND_NAME', number:json.event_body.number, name: json.event_body.name})
+                            console.log(json)
+                            break;
                         case "tox_status":
                             console.log(`got tox status: ${json.event_body.status}`)
                             let s = (json.event_body.status == "TOX_CONNECTION_NONE") ? "error" : "online" 

@@ -51,6 +51,7 @@ void EchoWebsock::handleNewConnection(const HttpRequestPtr &req,const WebSocketC
         back_end::back_end_server::main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_RECV, handle_new_msg);
         back_end::back_end_server::main_event_loop->subscribe_event(event::event_type::E_NEW_FR_REQ, handle_new_friend_request);
         back_end::back_end_server::main_event_loop->subscribe_event(event::event_type::E_CONN_STATUS, handle_tox_status);
+        back_end::back_end_server::main_event_loop->subscribe_event(event::event_type::E_FR_CHANGE_NAME, handle_friend_name_change);
     }
 }
 void EchoWebsock::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr)
@@ -78,4 +79,17 @@ void EchoWebsock::handle_tox_status(event::async_event e) {
     front_conn->send(
             json_helper::tox_status(*(std::string*)e.event_payload)
             );
+}
+void EchoWebsock::handle_friend_name_change(event::async_event e) {
+    LOG(INFO) << "Sending changed friend name to front end\n";
+    std::pair<uint32_t, std::string*>* val = (std::pair<uint32_t, std::string*>*)e.event_payload;
+    if (val == nullptr || val->second == nullptr) {
+        LOG(ERROR) << "Cant do crap, not doing anything val or str is null\n";
+    } else {
+        LOG(INFO) << "Got friend name change " << val->first << " " << *val->second << '\n';
+        front_conn->send(
+                json_helper::friend_name_change(val->first, *val->second)
+                );
+    }
+
 }
