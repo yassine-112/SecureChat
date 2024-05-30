@@ -11,7 +11,7 @@ export default function MessageStream() {
         <Flex  vertical style={{flex:'1 1 auto', height: '100%', overflow:'scroll', backgroundAttachment:'fixed',backgroundImage: `url('${backgroundPath}')`, backgroundSize: 'cover', backgroundPositionX: 'center', backgroundPositionY: 'bottom', backgroundRepeat:'no-repeat', padding:'1%'}} >
 
             {
-                (globalStat.currentFocusedFriend >= 0 && globalStat.message_log[globalStat.currentFocusedFriend].length > 0 ) ? globalStat.message_log[globalStat.currentFocusedFriend].map((e,i) => <Message isSentMessage={e.is_sent} messageBody={e.message_body} key={i}/>) : 
+                (globalStat.currentFocusedFriend >= 0 && globalStat.message_log[globalStat.currentFocusedFriend].length > 0 ) ? globalStat.message_log[globalStat.currentFocusedFriend].map((e,i) => <Message isSentMessage={e.is_sent} messageBody={e.message_body} key={i} timestamp={e.timestamp}/>) : 
             <MessageTimeDelimiter time={"No message"} />
             }
         </Flex>

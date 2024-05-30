@@ -103,7 +103,7 @@ function reducer(state, action) {
                 ...state,
                 "message_log" :{
                 ...state.message_log,
-                [action.number]: [...state.message_log[action.number] , {"message_body": action.message_body, is_sent: action.is_sent}]
+                    [action.number]: [...state.message_log[action.number] , {"message_body": action.message_body, is_sent: action.is_sent, timestamp: (new Date()).toISOString() }]
                 }
             }
         case 'INPUT_TEXT':
@@ -203,24 +203,21 @@ function App() {
             })
     }, [])
 
-    // open socket connection
 
-
-    const messageSentBtnHandler = () => {
+    const messageSentBtnHandler = (message) => {
         const sent_msg = 
             {
                 "event_id" : 0,
                 "event_type" : "message_sent",
                 "event_body" : {
                     "friend_number" : globalStat.currentFocusedFriend,
-                    "message_body": globalStat.input_text
+                    "message_body": message
                 }
 
             }
         console.log(sent_msg)
         ws.current.send(JSON.stringify(sent_msg))
-        dispatch({type: 'NEW_MESSAGE', number: globalStat.currentFocusedFriend, message_body: globalStat.input_text, is_sent:true})
-        dispatch({type: "INPUT_TEXT", input_text: ""})
+        dispatch({type: 'NEW_MESSAGE', number: globalStat.currentFocusedFriend, message_body: message, is_sent:true})
     }
 
 

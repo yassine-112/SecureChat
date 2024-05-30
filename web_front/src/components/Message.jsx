@@ -16,7 +16,7 @@ export default function Message(props) {
                 <MessageText text={props.messageBody} />
             </MessageContent>
             <Flex  justify={props.isSentMessage === true ? 'right' : 'left'} style={{margin:'1% 0 1% 0'}}>
-                <Timestamp  time={'11:11 PM'}/>
+                <Timestamp  time={props.timestamp}/>
                 { props.isSentMessage === true && <div style={{marginLeft:'1%'}}><Seenstamp isSeen={true} /></div>}
             </Flex>
         </Flex>
