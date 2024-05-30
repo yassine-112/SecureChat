@@ -10,6 +10,7 @@ void self_node_cb::register_handlers() {
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NAME, self_node_cb::handle_friend_get_name);
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_STATUS_MSG, self_node_cb::handle_friend_get_status_message);
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_USER_ID, self_node_cb::handle_get_user_id);
+    curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_SEND_FRIEND_REQ, self_node_cb::handle_sent_friend_req);
 }
 void self_node_cb::handle_get_user_id(event::sync_event *e) {
     LOG(INFO) << "!!!!!!!!!!!!!!!push user tox id resp " << curr_node->user_tox_id << '\n';
@@ -194,4 +195,26 @@ void self_node_cb::log(Tox *tox, Tox_Log_Level level, const char *file, uint32_t
     fprintf(f, "[TOXCORE][%s]%s:%d:%s - %s\n", tox_log_level_to_string(level), file, line, func, message);
     fclose(f);
     }
+}
+
+void self_node_cb::handle_sent_friend_req(event::sync_event *e) {
+    LOG(INFO) << "handling sent friend req\n";
+
+    if (e->event_payload == nullptr) {
+        LOG(ERROR) << "got null event payload\n";
+        exit(1);
+    }
+    std::pair<uint8_t*, std::string*>* payload = (std::pair<uint8_t*, std::string*>*)e->event_payload;
+    if (payload->first == nullptr) {
+        LOG(ERROR) << "payload pair fist is null\n";
+        exit(1);
+    }
+    if (payload->second == nullptr) {
+        LOG(ERROR) << "payload pair second is null\n";
+        exit(1);
+    }
+    uint32_t v = tox_friend_add(curr_node->tox_c_instance, payload->first, (uint8_t*)(*payload->second).c_str(), (*payload->second).length()+1, NULL);
+    uint32_t *friend_num = new uint32_t(v);
+     event::sync_event *k = new event::sync_event(event::event_type::E_RESP_SEND_FRIEND_REQ, friend_num, e->event_id);
+    curr_node->main_event_loop->push_resp(k);
 }

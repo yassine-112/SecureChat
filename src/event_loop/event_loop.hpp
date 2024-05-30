@@ -23,6 +23,7 @@ namespace event {
         E_RESP_GET_FRIEND_NAME,
         E_RESP_GET_FRIEND_NUMBERS_LIST,
         E_RESP_GET_USER_ID,
+        E_RESP_SEND_FRIEND_REQ, // we return the new created friend number
 // no reponse_types
         
         E_ACCEPT_FR_REQ,

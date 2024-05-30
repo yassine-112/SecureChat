@@ -34,6 +34,22 @@ void EchoWebsock::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr,std::
         }
         printf("\n");
         back_end::back_end_server::main_event_loop->push_event(send_ev);
+    } else if (e["event_type"].asString() == "send_friend_req") {
+        uint8_t* addr_buffer = new uint8_t[TOX_ADDRESS_SIZE];
+        sodium_hex2bin(addr_buffer, TOX_ADDRESS_SIZE, e["event_body"]["address"].asCString(), e["event_body"]["address"].asString().length(), NULL, NULL, NULL);
+
+        LOG(INFO) << "Sending event to send friend request with TOX ID: ";
+        for (int i = 0; i < TOX_ADDRESS_SIZE; i++) {
+            std::printf("%02x", addr_buffer[i]);
+        }
+        printf("\n");
+        std::printf("Req message: %s\n", e["event_body"]["message"].asCString());
+        std::pair<uint8_t*, std::string*>* payload = new std::pair<uint8_t*, std::string*>(
+                addr_buffer, new std::string(e["event_body"]["message"].asString())
+                );
+        event::sync_event *req_event = new event::sync_event(event::event_type::E_RESP_SEND_FRIEND_REQ, payload);
+        auto resp = back_end::back_end_server::main_event_loop->push_wait(req_event);
+        LOG(INFO) << "Answer for friend req sent is number " << *(uint32_t*)resp->event_payload << "\n";
     }
 
 
