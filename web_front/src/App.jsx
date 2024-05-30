@@ -9,7 +9,7 @@ import UserInfoWindow from './components/UserInfoWindow';
 import user_url from './assets/user.png'
 import { friend_request_response } from './utils';
 
-const initGlobal = {
+const initGlobal =  {
     "user_name": "",
     "user_status": "",
     "user_online_status": "",
@@ -17,7 +17,7 @@ const initGlobal = {
     "user_avatar_url": user_url,
     "tox_status": "connecting",
     "friend_list": [
-        {"name": "test user", "number": -99}
+//        {"name": "test user", "number": -99}
     ],
     "currentFocusedFriend": -1,
     "message_log": {
@@ -44,6 +44,7 @@ const initGlobal = {
         //         {"action_name": "accept", "action_handler": () => console.log("handler")},
         //         {"action_name": "deny", "action_handler": () => console.log("handler")}
         //     ],
+        //     "data": {"pub_key"}
         //     "can_delete": false
         // },
 
@@ -85,7 +86,10 @@ function reducer(state, action) {
             }
         case 'SET_FRIEND_LIST':
             let new_msg_log = {}
-            action.friend_list.map(elem => new_msg_log[elem.number] = [])
+            action.friend_list.forEach(elem => {
+                if (!state.message_log[elem.number])
+                        new_msg_log[elem.number] = []
+            })
             console.log(new_msg_log)
             return {
                 ...state, "friend_list": action.friend_list, "message_log": {...state.message_log, ...new_msg_log }
@@ -105,9 +109,11 @@ function reducer(state, action) {
             return state
     }
 }
+
+const state = window.localStorage.getItem("globalState") != null ? JSON.parse(window.localStorage.getItem("globalState")) : initGlobal;
 function App() {
     const [showRecipientPropertiesSidebar, setRecipientPropertiesSidebar] = useState(false);
-    const [globalStat, dispatch] = useReducer(reducer, initGlobal)
+    const [globalStat, dispatch] = useReducer(reducer, state)
 
     // THIS IS BAD PRACTICE, BUT I GOT NO TIME TO THINK FOR A BETTER SOLUTION DAMN IT!!!!!
     window.ws = useRef(null);
@@ -141,8 +147,15 @@ function App() {
                                     title: "A new friend request",
                                     body: `${json.event_body.message} from ${json.event_body.public_key}`,
                                     class: 'friend',
+                                    data: {
+                                        pub_key: json.event_body.public_key
+                                    },
                                     actions: [
-                                        {"action_name": "accept", "action_handler": () => friend_request_response(json.event_body.public_key)},
+                                        {"action_name": "accept", "action_handler": () => { 
+                                            friend_request_response(json.event_body.public_key);
+                                            dispatch({type:'DEL_NOTIFICATION', id:json.event_id});
+                                            // update friend list
+                                        }},
                                         {"action_name": "deny", "action_handler": () => dispatch({type:'DEL_NOTIFICATION', id:json.event_id})}
                                     ]
 
@@ -163,22 +176,28 @@ function App() {
         };
     }, []);
 
+    useEffect( () => {
+        window.localStorage.setItem("globalState", JSON.stringify(globalStat))
+        console.log(globalStat)
+    }, [globalStat]);
+
 
     useEffect( ()=>{
         // get friend list
         fetch('http://127.0.0.1:8080/get_friends_list')
             .then(response => response.json())
             .then(json => {
-            dispatch({type: 'SET_FRIEND_LIST', friend_list:json})
-            })
+                console.log("updating the friend list");
+                dispatch({type: 'SET_FRIEND_LIST', friend_list:json})
+            }) }, [globalStat.notifications] )
+
+    useEffect( () => {
         fetch('http://127.0.0.1:8080/get_user_id')
             .then(response => response.json())
             .then(json => {
                 dispatch({type: 'SET_USER_ID', id:json.id})
             })
     }, [])
-
-    useEffect( () => console.log(globalStat), [globalStat]);
 
     // open socket connection
 

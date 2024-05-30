@@ -39,6 +39,7 @@ void self_node_cb::register_tox_callbacks() {
 void self_node_cb::handle_friend_accept(event::async_event e) {
     LOG(INFO) << "Got accept req event";
     tox_friend_add_norequest(curr_node->tox_c_instance, (uint8_t*) e.event_payload, NULL);
+    curr_node->update_savedata_file();
     // TODO CHECK ERRORS
 }
 void self_node_cb::friend_request_cb(Tox *tox,const uint8_t *public_key,const  uint8_t *message, size_t length,
@@ -153,10 +154,13 @@ void self_node_cb::friend_name_cb(
         Tox *tox, Tox_Friend_Number friend_number,
         const uint8_t name[], size_t length, void *user_data) {
     if (name == NULL) {
-        printf("[TOX CALLBACK] cant do crap name is null\n");
+        LOG(INFO) << ("[TOX CALLBACK] cant do crap name is null\n");
         return;
     }
+
+    LOG(INFO) << "A friend changed his name to"<< name << "\n";
     auto r = new std::pair<uint32_t, std::string*>(friend_number, new std::string((char*)name));
+
     SEND_ASYNC_EV(E_FR_CHANGE_NAME, r);
 }
 

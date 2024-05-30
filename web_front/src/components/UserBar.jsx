@@ -34,6 +34,7 @@ export default function UserBar({avatarUrl}) {
     );
 }
 
+
 function NotificationList() {
     const {globalStat} = useContext(globalContext)
                         // [<a key="list-loadmore-edit">edit</a>, <a key="list-loadmore-more">delete</a>]}
@@ -45,6 +46,7 @@ function NotificationList() {
                 return undefined
         }
     }
+    // TODO: Dont hardcode actions for req accept
     return (
         <List
             itemLayout="horizontal"
