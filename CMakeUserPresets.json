@@ -4,6 +4,8 @@
         "conan": {}
     },
     "include": [
-        "/home/adrian/Projects/p2p_chat_app/build/Release/generators/CMakePresets.json"
+        "/home/adrian/Projects/p2p_chat_app/build/Release/generators/CMakePresets.json",
+        "build/Release/generators/CMakePresets.json",
+        "build/build/Release/generators/CMakePresets.json"
     ]
 }

@@ -28,6 +28,7 @@ SOFTWARE.
 #ifndef INCLUDE_COPPER_H
 #define INCLUDE_COPPER_H
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <chrono>
