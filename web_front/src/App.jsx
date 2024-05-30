@@ -151,12 +151,8 @@ function App() {
                                         pub_key: json.event_body.public_key
                                     },
                                     actions: [
-                                        {"action_name": "accept", "action_handler": () => { 
-                                            friend_request_response(json.event_body.public_key);
-                                            dispatch({type:'DEL_NOTIFICATION', id:json.event_id});
-                                            // update friend list
-                                        }},
-                                        {"action_name": "deny", "action_handler": () => dispatch({type:'DEL_NOTIFICATION', id:json.event_id})}
+                                        {"action_name": "accept", "action_handler": "accept_req"},
+                                        {"action_name": "deny", "action_handler": "deny_req"}
                                     ]
 
                                 }

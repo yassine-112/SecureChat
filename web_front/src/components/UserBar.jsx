@@ -3,6 +3,7 @@ import {SearchOutlined, BellOutlined , EllipsisOutlined, CloseOutlined } from '@
 import TopBar from './TopBar';
 import { useState, useContext, useReducer } from 'react';
 import globalContext from '../context';
+import { friend_request_response } from '../utils';
 
 const iconStyle = {
     margin: '0.3rem'
@@ -36,8 +37,19 @@ export default function UserBar({avatarUrl}) {
 
 
 function NotificationList() {
-    const {globalStat} = useContext(globalContext)
-                        // [<a key="list-loadmore-edit">edit</a>, <a key="list-loadmore-more">delete</a>]}
+    const {globalStat, dispatch} = useContext(globalContext)
+
+    const notification_handlers = {
+        'accept_req': (item) => {
+            friend_request_response(item.data.pub_key);
+            dispatch({type:'DEL_NOTIFICATION', id:item.id});
+
+        },
+        'deny_req': (item) => {
+            dispatch({type:'DEL_NOTIFICATION', id:item.id})
+        }
+    }
+
     const get_avatar = notification => {
         switch(notification.class) {
             case "friend": 
@@ -55,7 +67,7 @@ function NotificationList() {
                 <List.Item
                     actions={
                         item.actions
-                        .map( i => <a onClick={i.action_handler}>{i.action_name}</a>)
+                        .map( i => <a onClick={() => notification_handlers[i.action_handler](item)}>{i.action_name}</a>)
                         .concat(item.can_delete ? [<a><CloseOutlined /></a>] : [])
                     }
                 >
