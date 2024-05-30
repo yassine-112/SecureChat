@@ -7,9 +7,6 @@ import RecipientPropertiesSidebar from './components/RecipientPropertiesSidebar'
 import globalContext from './context';
 import UserInfoWindow from './components/UserInfoWindow';
 import user_url from './assets/user.png'
-import { friend_request_response } from './utils';
-import { PlusOutlined } from '@ant-design/icons';
-import TextArea from 'antd/es/input/TextArea';
 import SendRequest from './components/SendRequest';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
@@ -62,9 +59,11 @@ const initGlobal =  {
 
 function reducer(state, action) {
     switch (action.type) {
-        case 'UPDATE_FRIEND_NAME':
+        case 'UPDATE_FRIEND_NAME': // TODO: ADD MESSAGE LOG ELEMENT!!!
             if ( state.friend_list.find(fr => fr.number == action.number) == undefined ) return {
-                ...state, friend_list: [...state.friend_list, {name:action.name, number:action.number}]
+                ...state,
+                friend_list: [...state.friend_list, {name:action.name, number:action.number}],
+                message_log: {...state.message_log, ...{[action.number]:[]}}
             }
             else return {
                 ...state, friend_list: state.friend_list.map(fr => (fr.number === action.number) ? {...fr, name: action.name} :fr)
