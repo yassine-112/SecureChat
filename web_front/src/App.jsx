@@ -1,5 +1,5 @@
 import './App.css';
-import { Row, Col, Drawer  } from 'antd';
+import { Row, Col, Drawer, FloatButton, Modal, Input  } from 'antd';
 import ChatSidebar from './components/ChatSidebar';
 import MessagingWindow from './components/MessagingWindow';
 import { useState, createContext, useEffect, useReducer, useRef } from 'react';
@@ -8,7 +8,13 @@ import globalContext from './context';
 import UserInfoWindow from './components/UserInfoWindow';
 import user_url from './assets/user.png'
 import { friend_request_response } from './utils';
+import { PlusOutlined } from '@ant-design/icons';
+import TextArea from 'antd/es/input/TextArea';
+import SendRequest from './components/SendRequest';
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
 
+const notification = new  Notyf();
 const initGlobal =  {
     "user_name": "",
     "user_status": "",
@@ -119,6 +125,7 @@ function App() {
     const [showRecipientPropertiesSidebar, setRecipientPropertiesSidebar] = useState(false);
     const [globalStat, dispatch] = useReducer(reducer, state)
 
+
     // THIS IS BAD PRACTICE, BUT I GOT NO TIME TO THINK FOR A BETTER SOLUTION DAMN IT!!!!!
     window.ws = useRef(null);
 
@@ -220,15 +227,45 @@ function App() {
         dispatch({type: 'NEW_MESSAGE', number: globalStat.currentFocusedFriend, message_body: message, is_sent:true})
     }
 
+    const sendFrReqHandler = (address, message) => {
+        // validate args
+        if(address == "" || message == "") {
+            notification.error("Invalid input.");
+            return;
+        }
+        else if (address.match(/[A-F0-9]{76}/g) == null) {
+            ret = true;
+            notification.error("Invalid Tox ID")
+            return;
+        }
+
+
+        const sent_msg = 
+            {
+                "event_id" : 999,
+                "event_type" : "send_friend_req",
+                "event_body" : {
+                    "address" : address,
+                    "message": message
+                }
+
+            }
+        console.log(sent_msg)
+        ws.current.send(JSON.stringify(sent_msg))
+    }
+
+
+
 
 
   return (
-    <globalContext.Provider value={{globalStat, dispatch, messageSentBtnHandler}}>
-        <Row style={{maxHeight: '100vh'}}>
-            <Col span={6}>
-                <ChatSidebar />
-            </Col>
-            <Col span={18}>
+        <globalContext.Provider value={{globalStat, dispatch, messageSentBtnHandler, notification}}>
+            <SendRequest handler={sendFrReqHandler} />
+            <Row style={{maxHeight: '100vh'}}>
+                <Col span={6}>
+                    <ChatSidebar />
+                </Col>
+                <Col span={18}>
                     {
                         globalStat.currentFocusedFriend == -1 ? 
                             <UserInfoWindow/> : 
@@ -236,12 +273,12 @@ function App() {
                                 defaultView={globalStat.currentFocusedFriend == -1} 
                                 showSideBarToggle={ () => setRecipientPropertiesSidebar(!showRecipientPropertiesSidebar) }/>
                     }
-            </Col>
+                </Col>
                 <Drawer title="Contact Info" onClose={() => setRecipientPropertiesSidebar(false)} open={showRecipientPropertiesSidebar}>
-                        <RecipientPropertiesSidebar />
+                    <RecipientPropertiesSidebar />
                 </Drawer>
-        </Row>
-    </globalContext.Provider>
+            </Row>
+        </globalContext.Provider>
 )
 }
 
