@@ -7,7 +7,7 @@ import globalContext from "../context";
 import './ChatListItem.css'
 import { avatar_size } from "../utils";
 import { useContext } from "react";
-export default function ChatListItem({avatarUrl, chatName, lastMessage, onClick, isActive}) {
+export default function ChatListItem({avatarUrl, chatName, lastMessage, onClick, isActive, unreadMessages}) {
     const {globalStat} = useContext(globalContext);
     const className = globalStat.dark_theme_enabled ? "chatListItemDark" : "chatListItem" ;
     const activeClassName = globalStat.dark_theme_enabled ? "chatListItem-selected-dark" : "chatListItem-selected" ; 
@@ -28,9 +28,10 @@ export default function ChatListItem({avatarUrl, chatName, lastMessage, onClick,
                     </div>
                 </Flex>
                 <Flex justify="center" >
-                    <Seenstamp isSeen={true}/> <ChatItemLastMessage text={lastMessage.text} />
+                    { false && <Seenstamp isSeen={true}/>  }
+                    <ChatItemLastMessage text={lastMessage.text} />
                     <div style={{marginLeft:'auto'}}>
-                        <ChatListItemProperties />
+                        <ChatListItemProperties unreadMessages={unreadMessages}/>
                     </div>
                 </Flex>
             </Flex>
@@ -39,11 +40,11 @@ export default function ChatListItem({avatarUrl, chatName, lastMessage, onClick,
 }
 
 // TODO: implement these
-function ChatListItemProperties() {
+function ChatListItemProperties({unreadMessages}) {
+
     const marginStyle = { margin: '1%'};
     return <Flex style={{marginRight:'0.5rem'}}>
-        <PushpinTwoTone style={marginStyle} />
-        <Badge count={3} style={{...marginStyle, backgroundColor:'#0a6ef2'}} />
+        <Badge count={unreadMessages} style={{...marginStyle, backgroundColor:'#0a6ef2'}} />
         </Flex>
 }
 

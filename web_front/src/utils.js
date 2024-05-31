@@ -12,3 +12,19 @@ export const dark_theme_style_container = {
         color: 'white'
     }
 export const avatar_size = { xs: 30, sm: 35, md: 40, lg: 45, xl: 45, xxl: 55 }
+const formatter_obj = new Intl.DateTimeFormat('en-GB', {
+  year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: 'numeric', minute: '2-digit', second: '2-digit',
+  hourCycle: 'h12',
+});
+
+export const formatter = (iso_date) => {
+    console.log(iso_date)
+    try {
+        return formatter_obj.format(new Date(iso_date))
+    } catch (e) {
+        return 'NA'
+    }
+
+}
+

@@ -26,7 +26,7 @@ const initGlobal =  {
     "currentFocusedFriend": -1,
     "message_log": {
         // 0: [
-        //     {"message_body": "hello", "is_sent": true},
+        //     {"message_body": "hello", "is_sent": true, "is_local_seen": false},
         //     {"message_body": "hello", "is_sent": true},
         //     {"message_body": "hello", "is_sent": true},
         //     {"message_body": "hello", "is_sent": true},
@@ -60,6 +60,14 @@ const initGlobal =  {
 
 function reducer(state, action) {
     switch (action.type) {
+        case 'SET_FR_MESSAGE_SEEN':
+            return {
+                ...state,
+                message_log: {
+                    ...state.message_log
+                    , [action.number]: state.message_log[action.number].map(elem => {return {...elem, is_local_seen:true}})                
+                }
+            }
         case 'SET_DARK_THEME':
             return {
                 ...state, dark_theme_enabled: action.value
@@ -116,7 +124,7 @@ function reducer(state, action) {
                 ...state,
                 "message_log" :{
                 ...state.message_log,
-                    [action.number]: [...state.message_log[action.number] , {"message_body": action.message_body, is_sent: action.is_sent, timestamp: (new Date()).toISOString() }]
+                    [action.number]: [...state.message_log[action.number] , {"message_body": action.message_body, is_sent: action.is_sent, timestamp: (new Date()).toISOString(), is_local_seen:false }]
                 }
             }
         case 'INPUT_TEXT':
@@ -217,6 +225,11 @@ function App() {
                 dispatch({type: 'SET_USER_ID', id:json.id})
             })
     }, [])
+
+    useEffect( () => {
+        if (globalStat.currentFocusedFriend != -1)
+            dispatch({type:'SET_FR_MESSAGE_SEEN', number:globalStat.currentFocusedFriend})
+    }, [globalStat.currentFocusedFriend])
 
 
     const messageSentBtnHandler = (message) => {
