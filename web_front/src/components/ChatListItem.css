@@ -1,6 +1,6 @@
-.chatListItem:hover {
+.chatListItem:hover, .chatListItem-selected {
     background-color: #e6f7ff;
 }
-.chatListItem-selected {
-    background-color: #e6f7ff;
+.chatListItemDark:hover, .chatListItem-selected-dark {
+    background-color: darkslateblue;
 }

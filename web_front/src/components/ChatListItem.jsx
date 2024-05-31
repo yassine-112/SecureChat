@@ -2,12 +2,19 @@ import { Flex, Avatar, Badge } from "antd"
 import { PushpinTwoTone } from "@ant-design/icons";
 import Seenstamp from "./Seenstamp";
 import Timestamp from "./Timestamp";
+import globalContext from "../context";
 
 import './ChatListItem.css'
 import { avatar_size } from "../utils";
+import { useContext } from "react";
 export default function ChatListItem({avatarUrl, chatName, lastMessage, onClick, isActive}) {
+    const {globalStat} = useContext(globalContext);
+    const className = globalStat.dark_theme_enabled ? "chatListItemDark" : "chatListItem" ;
+    const activeClassName = globalStat.dark_theme_enabled ? "chatListItem-selected-dark" : "chatListItem-selected" ; 
     return (
-        <Flex onClick={onClick} align="center" justify="leftr" style={{padding:'0.05rem 0 0.05rem 0', cursor:'pointer', borderBottom:'1px solid grey'}} className={`chatListItem ${isActive ? "chatListItem-selected " : ""}`}>
+        <Flex onClick={onClick} align="center" justify="leftr" style={{padding:'0.05rem 0 0.05rem 0', cursor:'pointer', borderBottom:'1px solid grey'}} 
+            className={`${className} ${isActive ? activeClassName: ""}`}
+        >
             <div style={{margin:'1rem'}}>
                 <Badge dot offset={['-12%','89%' ]} status='success'>
                     <Avatar src={avatarUrl} size={avatar_size} />

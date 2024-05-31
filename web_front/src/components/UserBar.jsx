@@ -9,7 +9,7 @@ const iconStyle = {
     margin: '0.3rem'
 };
 
-export default function UserBar({avatarUrl}) {
+export default function UserBar({avatarUrl, searchStr, setSearchStr}) {
     const [searchInputVisible, setSearchInputVisible] = useState(false);
     const {globalStat, dispatch} = useContext(globalContext)
     return (
@@ -21,7 +21,13 @@ export default function UserBar({avatarUrl}) {
         right={
                 <Flex align='center'>
                         {!searchInputVisible ? <Button  icon={<SearchOutlined/>} onClick={()=>setSearchInputVisible(true)}/>  : 
-                        <Input prefix={<SearchOutlined/>} style={{maxWidth:'200px'}} width={"60px"} addonAfter={<Button size='small' type='text' icon={<CloseOutlined/>} onClick={()=>setSearchInputVisible(false)}/>}/>}
+                        <Input value={searchStr} onChange={(e) => setSearchStr(e.target.value)}
+                            prefix={<SearchOutlined/>} style={{maxWidth:'200px'}} width={"60px"} addonAfter={<Button size='small' type='text' icon={<CloseOutlined/>} 
+                                onClick={()=>
+                                    {
+                                        setSearchStr("");
+                                        setSearchInputVisible(false);
+                                    }}/>}/>}
 
                     <Popover content={<NotificationList/>} placement='bottom'>
                         <Badge offset={['-7%', '15%']} count={globalStat.notifications.length}>

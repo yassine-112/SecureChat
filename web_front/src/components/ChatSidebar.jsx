@@ -9,6 +9,7 @@ import globalContext from "../context";
 import { dark_theme_style_container } from "../utils";
 export default function ChatSidebar() {
     const [showChat, setShowChat] = useState(true);
+    const [searchStr, setSearchStr] = useState("");
     const {globalStat} = useContext(globalContext);
     let style = {
         maxHeight: '100vh',
@@ -19,8 +20,8 @@ export default function ChatSidebar() {
 
     return (
         <Flex vertical style={style}>
-                    <UserBar avatarUrl={i} />
-                     <ChatList />
+                    <UserBar avatarUrl={i} searchStr={searchStr} setSearchStr={setSearchStr} />
+                     <ChatList searchStr={searchStr} />
                 </Flex>
     );
                     // <ChatSideBarContentSelector onChange={(value) => value == 'chat' ? setShowChat(true) : setShowChat(false)}/>

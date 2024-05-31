@@ -10,7 +10,7 @@ const SendRequest = ({handler}) => {
     return (
         <>
             <FloatButton onClick={()=>setShowAddFriend(true)} style={{position: 'absolute', bottom:'20px', left:"20px"}} icon={<PlusOutlined />} tooltip={"Add a new friend"}/>
-            <Modal title="Send friend request" open={showAddFriend} okText={"Send"} onOk={() => {handler(pubKey, message); setShowAddFriend(false)}} onCancel={() => setShowAddFriend(false)}>
+            <Modal title="Send a friend request" open={showAddFriend} okText={"Send"} onOk={() => {handler(pubKey, message); setShowAddFriend(false)}} onCancel={() => setShowAddFriend(false)}>
                 <label for='friend_pub_key'>TOX id:  </label>
                 <Input type="text" id='friend_pub_key' name='friend_pub_key' value={pubKey} onChange={(e) => setPubKey(e.target.value)} required/>
 
