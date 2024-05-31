@@ -138,6 +138,7 @@ function reducer(state, action) {
 const state = window.localStorage.getItem("globalState") != null ? JSON.parse(window.localStorage.getItem("globalState")) : initGlobal;
 function App() {
     const [showRecipientPropertiesSidebar, setRecipientPropertiesSidebar] = useState(false);
+    const [exited, setExited] = useState(false);
     const [globalStat, dispatch] = useReducer(reducer, state)
 
 
@@ -248,6 +249,18 @@ function App() {
         dispatch({type: 'NEW_MESSAGE', number: globalStat.currentFocusedFriend, message_body: message, is_sent:true})
     }
 
+    const app_exit = () => {
+        const sent_msg = 
+            {
+                "event_id" : 0,
+                "event_type" : "sys_exit",
+            }
+        console.log(sent_msg)
+        ws.current.send(JSON.stringify(sent_msg))
+        setExited(true);
+
+    }
+
     const sendFrReqHandler = (address, message) => {
         // validate args
         if(address == "" || message == "") {
@@ -280,11 +293,11 @@ function App() {
 
 
 
-  return (
+    return exited == true ? <p>You can now close this tab.</p> : (
         <ConfigProvider  theme={{
             algorithm: globalStat.dark_theme_enabled ? theme.darkAlgorithm : theme.defaultAlgorithm
         }}>
-            <globalContext.Provider value={{globalStat, dispatch, messageSentBtnHandler, notification}}>
+            <globalContext.Provider value={{globalStat, dispatch, messageSentBtnHandler, notification, app_exit}}>
                 <SendRequest handler={sendFrReqHandler} />
                 <Row style={{maxHeight: '100vh'}}>
                     <Col span={6} style={{backgroundColor: globalStat.dark_theme_enabled ? "rgb(30, 30, 30)" : 'white'}}>

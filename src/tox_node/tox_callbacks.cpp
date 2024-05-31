@@ -5,6 +5,7 @@ void self_node_cb::register_handlers() {
     LOG(INFO) << "registring handlers\n";
     curr_node->main_event_loop->subscribe_event(event::event_type::E_NEW_MESSAGE_SENT, self_node_cb::handle_message_sent);
     curr_node->main_event_loop->subscribe_event(event::event_type::E_ACCEPT_FR_REQ, self_node_cb::handle_friend_accept);
+    curr_node->main_event_loop->subscribe_event(event::event_type::SYS_EXIT, self_node_cb::handle_sys_exit);
 
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NUMBERS_LIST, self_node_cb::handle_friend_list_req);
     curr_node->main_event_loop->subscribe_event_resp(event::event_type::E_RESP_GET_FRIEND_NAME, self_node_cb::handle_friend_get_name);
@@ -217,4 +218,9 @@ void self_node_cb::handle_sent_friend_req(event::sync_event *e) {
     uint32_t *friend_num = new uint32_t(v);
      event::sync_event *k = new event::sync_event(event::event_type::E_RESP_SEND_FRIEND_REQ, friend_num, e->event_id);
     curr_node->main_event_loop->push_resp(k);
+}
+
+void self_node_cb::handle_sys_exit(event::async_event e){
+    LOG(INFO) << "TOX got exit signal, exiting\n";
+    curr_node->stop_instance();
 }

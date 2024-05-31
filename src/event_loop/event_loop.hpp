@@ -35,7 +35,8 @@ namespace event {
         E_NEW_MESSAGE_SENT, // sending a new message
         E_SYSTEM, // ??
         E_SYSTEM_CONNECTED, // ??
-        E_TEST1
+        E_TEST1,
+        SYS_EXIT
     };
     struct system_connected_event {
         TOX_CONNECTION connection_mode;

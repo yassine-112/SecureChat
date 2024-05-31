@@ -36,6 +36,7 @@ namespace tox{
             std::list<dht_node> *dht_node_list;
             Tox_Options   node_options;
             bool node_first_run;
+            bool tox_stopped = false;
             /* node_status */
             Tox* tox_c_instance;
             void main_loop();

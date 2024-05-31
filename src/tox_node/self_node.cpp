@@ -96,7 +96,7 @@ self_node::~self_node() {
 }
 void self_node::main_loop() {
     Tox* tox = this->tox_c_instance;
-     while (1) {
+     while (!tox_stopped) {
         tox_iterate(tox, NULL);
  
         usleep(tox_iteration_interval(tox) * 1000);
@@ -107,5 +107,7 @@ std::thread self_node::spawn() {
     return std::thread(&self_node::main_loop, this);
 }
 void self_node::stop_instance() {
+    tox_stopped = true;
+    sleep(1);
     tox_kill(tox_c_instance);
 }

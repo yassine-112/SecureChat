@@ -7,7 +7,7 @@ import { EditTwoTone, LogoutOutlined } from "@ant-design/icons";
 
 const UserInfoWindow = () => {
     const [moreBtnShown, setMoreBtnShwon] = useState(false);
-    const {globalStat} = useContext(globalContext);
+    const {globalStat, app_exit} = useContext(globalContext);
     const flex_style = {
         minHeight: '100vh',
         backgroundAttachment:'fixed',
@@ -23,7 +23,7 @@ const UserInfoWindow = () => {
             <div style={{marginTop:"4rem"}}></div>
                 <ToxConnectionStatus /> 
                 <UserInfoEdit/>
-                <Button type='default' value="Logout" icon={<LogoutOutlined />} danger>Logout</Button>
+            <Button type='default' value="Logout" icon={<LogoutOutlined />} onClick={() => app_exit()} danger>Logout</Button>
             <Button type='default' value="Logout" onClick={() => setMoreBtnShwon(!moreBtnShown)}>{moreBtnShown ? "Less options": "More options"}</Button>
             {
                 moreBtnShown &&

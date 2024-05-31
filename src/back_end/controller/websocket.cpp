@@ -50,6 +50,10 @@ void EchoWebsock::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr,std::
         event::sync_event *req_event = new event::sync_event(event::event_type::E_RESP_SEND_FRIEND_REQ, payload);
         auto resp = back_end::back_end_server::main_event_loop->push_wait(req_event);
         LOG(INFO) << "Answer for friend req sent is number " << *(uint32_t*)resp->event_payload << "\n";
+    } else if (e["event_type"].asString() == "sys_exit") {
+        back_end::back_end_server::main_event_loop->push_event(event::async_event(event::event_type::SYS_EXIT, nullptr));
+        drogon::app().quit();
+
     }
 
 

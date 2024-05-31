@@ -55,14 +55,18 @@ int main(int argc, char* argv[]) {
     /* std::thread interface_thd = std::thread(msg_interface, main_event_loop); */
 
 
-    getchar();
-    node->stop_instance();
-    LOG(INFO) << "stopped tox\n";
+    /*getchar();*/
+    /*node->stop_instance();*/
+    /*LOG(INFO) << "stopped tox\n";*/
 
     p2p_thread.join();
+    LOG(INFO) << "Tox thread exited\n";
     main_loop_threads.first.join();
-    main_loop_threads.second.join();
+    LOG(INFO) << "First event loop thread exited\n";
+    /*main_loop_threads.second.join();*/
+    LOG(INFO) << "Second event loop thread exited\n";
     web_thread.join();
+    LOG(INFO) << "Web thread exited\n";
     /* interface_thd.join(); */
 
 

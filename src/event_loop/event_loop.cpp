@@ -88,6 +88,13 @@ bool event_loop::main_loop() {
                 for (callback_fn cb : *target_callback_list) {
                     cb(curr_e);
                 }
+                if(curr_e.e_type == event::event_type::SYS_EXIT) {
+                    LOG(INFO) << "Event loop got exit event, closing the channels\n";
+                    this->main_event_queue->close();
+                    LOG(INFO) << "Event loop closing req channel\n";
+                    this->req_event_queue->close();
+                    LOG(INFO) << "Event loop req channel closed\n";
+                }
             }
         }
 

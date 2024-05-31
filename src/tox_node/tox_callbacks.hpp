@@ -24,6 +24,8 @@ namespace tox{
             static void handle_get_user_id(event::sync_event *e);
             static void handle_sent_friend_req(event::sync_event *e);
 
+            static void handle_sys_exit(event::async_event e);
+
 
             // tox callbacks: put events in the event loop
             static void friend_request_cb(Tox *tox, const uint8_t *public_key, 
