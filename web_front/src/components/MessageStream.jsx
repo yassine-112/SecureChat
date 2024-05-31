@@ -16,7 +16,7 @@ export default function MessageStream() {
 
     useEffect(() => {
         scrollToBottom()
-    }, [globalStat.message_log]);
+    }, [globalStat.message_log, globalStat.currentFocusedFriend]);
     return (
         <Flex  vertical style={{flex:'1 1 auto',
             height: '100%',
