@@ -1,5 +1,5 @@
 import './App.css';
-import { Row, Col, Drawer, FloatButton, Modal, Input  } from 'antd';
+import { Row, Col, Drawer, FloatButton, Modal, Input, ConfigProvider, theme  } from 'antd';
 import ChatSidebar from './components/ChatSidebar';
 import MessagingWindow from './components/MessagingWindow';
 import { useState, createContext, useEffect, useReducer, useRef } from 'react';
@@ -13,6 +13,7 @@ import 'notyf/notyf.min.css';
 
 const notification = new  Notyf();
 const initGlobal =  {
+    "dark_theme_enabled": false,
     "user_name": "",
     "user_status": "",
     "user_online_status": "",
@@ -59,6 +60,10 @@ const initGlobal =  {
 
 function reducer(state, action) {
     switch (action.type) {
+        case 'SET_DARK_THEME':
+            return {
+                ...state, dark_theme_enabled: action.value
+            }
         case 'UPDATE_FRIEND_NAME': // TODO: ADD MESSAGE LOG ELEMENT!!!
             if ( state.friend_list.find(fr => fr.number == action.number) == undefined ) return {
                 ...state,
@@ -263,26 +268,30 @@ function App() {
 
 
   return (
-        <globalContext.Provider value={{globalStat, dispatch, messageSentBtnHandler, notification}}>
-            <SendRequest handler={sendFrReqHandler} />
-            <Row style={{maxHeight: '100vh'}}>
-                <Col span={6}>
-                    <ChatSidebar />
-                </Col>
-                <Col span={18}>
-                    {
-                        globalStat.currentFocusedFriend == -1 ? 
-                            <UserInfoWindow/> : 
-                            <MessagingWindow messageSentBtnHandler={messageSentBtnHandler} 
-                                defaultView={globalStat.currentFocusedFriend == -1} 
-                                showSideBarToggle={ () => setRecipientPropertiesSidebar(!showRecipientPropertiesSidebar) }/>
-                    }
-                </Col>
-                <Drawer title="Contact Info" onClose={() => setRecipientPropertiesSidebar(false)} open={showRecipientPropertiesSidebar}>
-                    <RecipientPropertiesSidebar />
-                </Drawer>
-            </Row>
-        </globalContext.Provider>
+        <ConfigProvider  theme={{
+            algorithm: globalStat.dark_theme_enabled ? theme.darkAlgorithm : theme.defaultAlgorithm
+        }}>
+            <globalContext.Provider value={{globalStat, dispatch, messageSentBtnHandler, notification}}>
+                <SendRequest handler={sendFrReqHandler} />
+                <Row style={{maxHeight: '100vh'}}>
+                    <Col span={6} style={{backgroundColor: globalStat.dark_theme_enabled ? "rgb(30, 30, 30)" : 'white'}}>
+                        <ChatSidebar />
+                    </Col>
+                    <Col span={18}>
+                        {
+                            globalStat.currentFocusedFriend == -1 ? 
+                                <UserInfoWindow/> : 
+                                <MessagingWindow messageSentBtnHandler={messageSentBtnHandler} 
+                                    defaultView={globalStat.currentFocusedFriend == -1} 
+                                    showSideBarToggle={ () => setRecipientPropertiesSidebar(!showRecipientPropertiesSidebar) }/>
+                        }
+                    </Col>
+                    <Drawer title="Contact Info" onClose={() => setRecipientPropertiesSidebar(false)} open={showRecipientPropertiesSidebar}>
+                        <RecipientPropertiesSidebar />
+                    </Drawer>
+                </Row>
+            </globalContext.Provider>
+        </ConfigProvider>
 )
 }
 

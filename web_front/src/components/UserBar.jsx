@@ -1,5 +1,5 @@
-import {Avatar, Badge, Button, Flex, Input, List, Popover, Card} from 'antd';
-import {SearchOutlined, BellOutlined , EllipsisOutlined, CloseOutlined } from '@ant-design/icons'
+import {Avatar, Badge, Button, Flex, Input, List, Popover, Card, Dropdown, Switch} from 'antd';
+import {SearchOutlined, BellOutlined , EllipsisOutlined, CloseOutlined, SmileOutlined } from '@ant-design/icons'
 import TopBar from './TopBar';
 import { useState, useContext, useReducer } from 'react';
 import globalContext from '../context';
@@ -28,14 +28,53 @@ export default function UserBar({avatarUrl}) {
                             <Button style={iconStyle} icon={<BellOutlined />}/>
                         </Badge>
                     </Popover>
+                    <OptionsList />
 
-                    <Button style={iconStyle} icon={<EllipsisOutlined />}/>
                 </Flex>
             } />
     );
 }
 
+function OptionsList() {
+    const [open, setOpen] = useState(false);
+    const {globalStat, dispatch} = useContext(globalContext)
 
+    const handleDarkModeChange = (status) => {
+        dispatch({type:"SET_DARK_THEME", value:status});
+    }
+    const items = [
+        {
+            key: '1',
+            label: (
+                <>
+                    <span style={{display:"inline-block", margin:"0 0.3rem 0 0.3rem"}}>
+                    Dark Mode
+                </span>
+                    <Switch size={"small"} onChange={handleDarkModeChange} checked={globalStat.dark_theme_enabled}/>
+                </>
+            ),
+        },
+        {
+            key: '2',
+            label: (
+                <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
+                    Language
+                </a>
+            ),
+            children: [
+                {key: '2-1', label: 'French'},
+                {key: '2-2', label: 'English'},
+            ]
+        },
+    ];
+    return (
+        <>
+            <Dropdown menu={{items, }} open={open} onOpenChange={(nextOpen, info) => {if (info.source === 'trigger' || nextOpen) setOpen(nextOpen)}}>
+                <Button style={iconStyle} icon={<EllipsisOutlined />}/>
+            </Dropdown>
+        </>
+    );
+}
 
 function NotificationList() {
     const {globalStat, dispatch} = useContext(globalContext)

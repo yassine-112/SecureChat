@@ -2,14 +2,16 @@ import { Flex, Alert, Avatar, Input, Select, Button } from "antd";
 import globalContext from "../context";
 import { useContext, useState } from "react";
 import backgroundPath from '../assets/chatBackground.jpg'
+import darkBackgroundPath from '../assets/chatBackgroundDark.jpg'
 import { EditTwoTone, LogoutOutlined } from "@ant-design/icons";
 
 const UserInfoWindow = () => {
     const [moreBtnShown, setMoreBtnShwon] = useState(false);
+    const {globalStat} = useContext(globalContext);
     const flex_style = {
         minHeight: '100vh',
         backgroundAttachment:'fixed',
-        backgroundImage: `url('${backgroundPath}')`, 
+        backgroundImage: globalStat.dark_theme_enabled ?  `url('${darkBackgroundPath}')`: `url('${backgroundPath}')`,
         backgroundSize: 'cover', 
         backgroundPositionX: 'center',
         backgroundPositionY: 'bottom',

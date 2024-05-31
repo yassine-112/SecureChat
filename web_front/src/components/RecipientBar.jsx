@@ -2,14 +2,16 @@ import { Avatar, Badge, Button } from "antd";
 import TopBar from "./TopBar";
 import { MoreOutlined } from "@ant-design/icons";
 import Timestamp from "./Timestamp";
+import { avatar_size } from "../utils";
 
 export default function RecipientBar({avatarUrl, name, showSideBarToggle}) {
     // TODO: FIX avtar size of this and chatListitem
+
     return (
         <TopBar  border={false} left={
             <>
             <Badge dot offset={['-8%','89%' ]} status='success'>
-            <Avatar src={avatarUrl} size={{ xs: 30, sm: 35, md: 40, lg: 45, xl: 50, xxl: 100 }}/>
+            <Avatar src={avatarUrl} size={avatar_size}/>
             </Badge>
 
                 <div style={{ marginLeft: '1%'}}>

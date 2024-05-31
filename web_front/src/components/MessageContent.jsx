@@ -1,7 +1,9 @@
-
+import globalContext from "../context";
+import { useContext } from "react";
 export default function MessageContent({isSentMessage,children}) {
+    const {globalStat} = useContext(globalContext)
     let messageStyle =  { 
-        "backgroundColor": "#3997fe",
+        "backgroundColor": globalStat.dark_theme_enabled ? "rgb(10, 110, 242)" : "#3997fe",
         "borderRadius": "27px",
         "padding": "1.2rem 0.3rem 1.2rem 1rem",
     };
