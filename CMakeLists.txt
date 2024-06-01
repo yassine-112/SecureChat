@@ -10,7 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 option(RUN_YARN_BUILD "Run yarn build command" OFF)
 if(RUN_YARN_BUILD)
     # Execute yarn run build command
-    execute_process(COMMAND yarn run build WORKING_DIRECTORY ../web_front)
+    execute_process(COMMAND yarnpkg run build WORKING_DIRECTORY ../web_front)
     if(NOT ${yarn_result} EQUAL 0)
         message(FATAL_ERROR "Failed to run yarn run build command")
     endif()
@@ -23,7 +23,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set (CMAKE_CXX_FLAGS "-g -O0")
 find_package(Drogon REQUIRED)
-find_package (glog 0.7.0 REQUIRED)
+find_package (glog  REQUIRED)
 
 add_subdirectory(c-toxcore)
 

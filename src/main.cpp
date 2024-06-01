@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
     LOG(INFO) << "Tox thread exited\n";
     main_loop_threads.first.join();
     LOG(INFO) << "First event loop thread exited\n";
-    /*main_loop_threads.second.join();*/
+    /*main_loop_threads.second.join();*/ // make it work with this line
     LOG(INFO) << "Second event loop thread exited\n";
     web_thread.join();
     LOG(INFO) << "Web thread exited\n";
