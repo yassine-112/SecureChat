@@ -18,6 +18,9 @@ RUN  cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=Release/generators/cona
 RUN cmake --build .
 COPY build/bin/config.json bin/config.json
 RUN sed -i 's/127.0.0.1/0.0.0.0/g' bin/config.json
+WORKDIR /app/web_front
+RUN yarnpkg install
+RUN yarnpkg run build
 
 
 WORKDIR /app/build/bin
