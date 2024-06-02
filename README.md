@@ -1,6 +1,6 @@
 <div align="center">
     <h2>Secure Chat</h2>
-    <p>A peer-to-peer, decentralized, end-to-end encrypted chat application based on the TOX protocol</p>
+    <p>Une application de messagerie décentralisée de pair-à-pair, avec chiffrement de bout en bout, basée sur le protocole TOX.</p>
 </div>
 
 <div>
@@ -35,9 +35,22 @@ P2P SecureChat est une application de messagerie instantanée axée sur la confi
 
 ## Architecture générale de l'application
 <img src="docs/system_diagram.drawio.png" />
-### Technologies utilisées
 
-
+### Languages utilisées
+- Frontend: HTML, CSS, JS avec React JS
+- Backend: C++
+### Bibliothèques/Outils utilisées
+- Frontend:
+  * <a href="https://ant.design/">Ant Design</a> (A React Components libraries)
+  * Web APIs (<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket">Websocket</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">localstorage</a>)
+  * <a href="https://yarnpkg.com/">yarn</a> (package manager)
+  * <a href="https://vitejs.dev/">vite</a> (React project boilerplate code generator).
+- Backend:
+  * <a href="https://drogon.org/">Drogon</a> (HTTP / Websocket backend)
+  * <a href="https://github.com/TokTok/c-toxcore">Tox</a> (Peer 2 Peer communication layer)
+  * <a href="https://github.com/atollk/copper">Copper</a> (Implements a queue used by the event loop)
+  * <a href="https://github.com/google/glog">GoogleLog</a> (For logging)
+  
 ## Source Code organisation
 
 ## Security measures
