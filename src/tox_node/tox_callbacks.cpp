@@ -42,7 +42,7 @@ void self_node_cb::handle_friend_accept(event::async_event e) {
     LOG(INFO) << "Got accept req event";
     Tox_Err_Friend_Add err;
     tox_friend_add_norequest(curr_node->tox_c_instance, (uint8_t*) e.event_payload, &err);
-    tox_err_friend_add_to_string(err);
+    LOG(INFO) << "accept firend STATUS"  <<tox_err_friend_add_to_string(err);
     curr_node->update_savedata_file();
     // TODO CHECK ERRORS
 }
