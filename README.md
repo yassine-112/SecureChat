@@ -35,6 +35,8 @@ P2P SecureChat est une application de messagerie instantanée axée sur la confi
 
 ## Architecture générale de l'application
 <img src="docs/system_diagram.drawio.png" />
+### Technologies utilisées
+
 
 ## Source Code organisation
 
