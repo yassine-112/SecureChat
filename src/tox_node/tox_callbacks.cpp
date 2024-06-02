@@ -40,7 +40,9 @@ void self_node_cb::register_tox_callbacks() {
 }
 void self_node_cb::handle_friend_accept(event::async_event e) {
     LOG(INFO) << "Got accept req event";
-    tox_friend_add_norequest(curr_node->tox_c_instance, (uint8_t*) e.event_payload, NULL);
+    Tox_Err_Friend_Add err;
+    tox_friend_add_norequest(curr_node->tox_c_instance, (uint8_t*) e.event_payload, &err);
+    tox_err_friend_add_to_string(err);
     curr_node->update_savedata_file();
     // TODO CHECK ERRORS
 }
@@ -73,6 +75,7 @@ void self_node_cb::friend_message_cb(Tox *tox, uint32_t friend_number, TOX_MESSA
             e->length = length;
             e->friend_number = friend_number;
             e->type = type;
+            LOG(INFO) << "TOX NODE GOT MESSAGE";
 
             SEND_ASYNC_EV(E_NEW_MESSAGE_RECV, e)
             /* e
@@ -103,8 +106,10 @@ void self_node_cb::self_connection_status_cb(Tox *tox, TOX_CONNECTION connection
 void self_node_cb::handle_message_sent(event::async_event e) {
     // TODO: do checking
     event::message_event *curr_e = (event::message_event*) e.event_payload;
+    Tox_Err_Friend_Send_Message err;
     tox_friend_send_message(curr_node->tox_c_instance, curr_e->friend_number, curr_e->type
-            , curr_e->message, curr_e->length, NULL);
+            , curr_e->message, curr_e->length, &err);
+    LOG(INFO) << "SEND MESSAGE STATUS" << tox_err_friend_send_message_to_string(err);
 
 }
 
@@ -214,9 +219,11 @@ void self_node_cb::handle_sent_friend_req(event::sync_event *e) {
         LOG(ERROR) << "payload pair second is null\n";
         exit(1);
     }
-    uint32_t v = tox_friend_add(curr_node->tox_c_instance, payload->first, (uint8_t*)(*payload->second).c_str(), (*payload->second).length()+1, NULL);
+    Tox_Err_Friend_Add err;
+    uint32_t v = tox_friend_add(curr_node->tox_c_instance, payload->first, (uint8_t*)(*payload->second).c_str(), (*payload->second).length()+1, &err);
+    LOG(INFO) << "ADD FRIEND STATUS " << tox_err_friend_add_to_string(err);
     uint32_t *friend_num = new uint32_t(v);
-     event::sync_event *k = new event::sync_event(event::event_type::E_RESP_SEND_FRIEND_REQ, friend_num, e->event_id);
+    event::sync_event *k = new event::sync_event(event::event_type::E_RESP_SEND_FRIEND_REQ, friend_num, e->event_id);
     curr_node->main_event_loop->push_resp(k);
 }
 
