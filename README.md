@@ -4,25 +4,26 @@
 </div>
 
 <div>
-<p>Table of contents</p>
+<p>Table des matières</p>
 <ol>
-    <li>About the project</li>
-    <li>Screenshots</li>
-    <li>Application generale architecture</li>
-    <li>Source Code organisation</li>
-    <li>Security measures</li>
-    <li>Compiling and Running</li>
-    <li>Running it inside Docker</li>
-    <li>Demo video</li>
+    <li>À propos du projet</li>
+    <li>Captures d'écran</li>
+    <li>Architecture générale de l'application</li>
+    <li>Organisation du code source</li>
+    <li>Mesures de sécurité</li>
+    <li>Compilation et exécution</li>
+    <li>Exécution à l'intérieur de Docker</li>
+    <li>Vidéo de démonstration</li>
 </ol>
 </div>
 
 
-## About the project
+## À propos du projet
 P2P SecureChat est une application de messagerie instantanée axée sur la confidentialité et la sécurité, conçue pour permettre des communications chiffrées entre utilisateurs via un réseau peer-to-peer décentralisé.
 
-
 ## Screenshots
+
+<img src="docs/1.png"/>
 
 ## Application generale architecture
 
