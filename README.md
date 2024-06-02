@@ -51,11 +51,36 @@ P2P SecureChat est une application de messagerie instantanée axée sur la confi
   * <a href="https://github.com/atollk/copper">Copper</a> (Implements a queue used by the event loop)
   * <a href="https://github.com/google/glog">GoogleLog</a> (For logging)
   
-## Source Code organisation
+## Organisation du code source
 
-## Security measures
+```
+├── build:                 (Répertoire de construction, contient les fichiers générés lors de la compilation)
+├── CMakeLists.txt         (Fichier principal de configuration de CMake)
+├── CMakeUserPresets.json (Fichier de configuration des préréglages utilisateur pour CMake)
+├── conanfile.txt          (Fichier de configuration pour Conan, un gestionnaire de paquets C++)
+├── contrib                (Fichiers de configucation du programme)
+├── c-toxcore              (Répertoire du code source de c-toxcore, une dépendance)
+├── Dockerfile             (Fichier de configuration pour la création d'une image Docker)
+├── docs                   (Documentation du projet)
+├── include                (Répertoire contenant les fichiers d'en-tête)
+├── libs                   (Répertoire contenant des bibliothèques externes)
+├── README.md              (Fichier README contenant des informations sur le projet)
+├── src                    (Répertoire contenant le code source principal en c++)
+├── uml                    (Diagrammes UML du projet)
+├── web_front              (Front-end web du projet)
+```
 
-## Compiling and Running
+## Mesures de sécurité
+Étant donné l'utilisation de React JS dans le front-end, plusieurs mesures de sécurité sont intégrées pour contrer les attaques frontales telles que les attaques XSS (Cross-Site Scripting). React JS offre des mécanismes intégrés pour prévenir de telles attaques, notamment en utilisant le concept de Virtual DOM pour contrôler le rendu des éléments HTML. Cela garantit que toute insertion de données est traitée de manière sécurisée et échappe aux caractères potentiellement dangereux.
+
+De plus, le serveur écoute uniquement sur localhost, ce qui signifie qu'aucun autre utilisateur ne peut accéder à l'instance de l'application d'un autre. Cela limite considérablement les risques de violation de sécurité en restreignant l'accès aux ressources de l'application à la machine locale. En conséquence, les interactions avec l'application sont sécurisées et isolées, renforçant ainsi la protection contre les intrusions et les exploitations malveillantes.
+
+## Compilation et exécution
+Les étapes à suivre pour compiler le code sur une machine Ubuntu 22
+
+```bash
+ls -l
+```
 
 ## Running it inside Docker
 
