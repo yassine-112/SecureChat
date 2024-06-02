@@ -44,7 +44,7 @@ namespace tox{
             void register_tox_callbacks();
             void update_savedata_file();
             bool auto_accept = false;
-            bool enable_trace = false;
+            bool enable_trace = true;
             const char *savedata_filename = "savedata.tox";
             const char *savedata_tmp_filename = "savedata.tox.tmp";
 

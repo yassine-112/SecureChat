@@ -39,10 +39,10 @@ void self_node_cb::register_tox_callbacks() {
     tox_callback_friend_read_receipt(tox, self_node_cb::friend_read_receipt_cb);
 }
 void self_node_cb::handle_friend_accept(event::async_event e) {
-    LOG(INFO) << "Got accept req event";
+    LOG(INFO) << "GOT FRIEND ACCEPT REQUEST EVENT";
     Tox_Err_Friend_Add err;
     tox_friend_add_norequest(curr_node->tox_c_instance, (uint8_t*) e.event_payload, &err);
-    LOG(INFO) << "accept firend STATUS"  <<tox_err_friend_add_to_string(err);
+    LOG(INFO) << "LOCAL ACCEPT FRIEND STATUS "  <<tox_err_friend_add_to_string(err);
     curr_node->update_savedata_file();
     // TODO CHECK ERRORS
 }
@@ -198,8 +198,10 @@ void self_node_cb::log(Tox *tox, Tox_Log_Level level, const char *file, uint32_t
     // to this in a better damn way
     FILE* f = fopen("./tox_trace", "a+");
     if (f) {
-    fprintf(f, "[TOXCORE][%s]%s:%d:%s - %s\n", tox_log_level_to_string(level), file, line, func, message);
-    fclose(f);
+        fprintf(f, "[TOXCORE][%s]%s:%d:%s - %s\n", tox_log_level_to_string(level), file, line, func, message);
+        fclose(f);
+    } else {
+        LOG(INFO) << "failed to open log file";
     }
 }
 
