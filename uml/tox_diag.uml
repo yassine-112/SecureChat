@@ -1,0 +1,15 @@
+@startuml
+title Sending a message
+participant web_back_end as trd
+participant event_loop as ev
+participant tox_callback as tox_cb
+/'participant self_node as sn'/
+participant tox_lib as tox
+
+
+tox_cb --> ev: subscribe_event(E_NEW_MESSAGE_SENT, handle_message_sent);
+trd --> ev: push_event(E_NEW_MESSAGE_SENT, data) 
+ev --> tox_cb: handle_message_sent(data)
+tox_cb --> tox: tox_friend_send_message(data)
+
+@enduml
