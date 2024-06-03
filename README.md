@@ -4,11 +4,11 @@
 </div>
 
 ## Équipe
--  
-- 
-- 
-- 
-- 
+- x 
+- x
+- x
+- x
+- x
 - MOARRAF Yassine
 
 
@@ -64,7 +64,7 @@ P2P SecureChat est une application de messagerie instantanée axée sur la confi
 ## Organisation du code source
 
 ```
-├── build:                 (Répertoire de construction, contient les fichiers générés lors de la compilation)
+├── build                  (Répertoire de construction, contient les fichiers générés lors de la compilation)
 ├── CMakeLists.txt         (Fichier principal de configuration de CMake)
 ├── CMakeUserPresets.json (Fichier de configuration des préréglages utilisateur pour CMake)
 ├── conanfile.txt          (Fichier de configuration pour Conan, un gestionnaire de paquets C++)
