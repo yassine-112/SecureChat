@@ -98,7 +98,7 @@ sudo apt-get install -y libgoogle-glog-dev libsodium-dev libopus-dev libvpx-dev 
 # Installation outils de compilation du frontend
 sudo apt-get install -y yarnpkg nodejs npm
 
-# Installation du gestionaire de paquet c++: Conan
+# Installation du gestionnaire de paquets c++: Conan
 pipx install conan
 
 # Ajout du conan dnas le $PATH
