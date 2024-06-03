@@ -5,32 +5,16 @@
 
 <div>
 <p>Table des matières</p>
-<ol>
-  <li>
-    <a href="a-propos-du-projet">À propos du projet</a>
-  </li>
-  <li>
-    <a href="captures-d-ecran">Captures d'écran</a>
-  </li>
-  <li>
-    <a href="architecture-generale-de-l-application">Architecture générale de l'application</a>
-  </li>
-  <li>
-    <a href="organisation-du-code-source">Organisation du code source</a>
-  </li>
-  <li>
-    <a href="mesures-de-securite">Mesures de sécurité</a>
-  </li>
-  <li>
-    <a href="compilation-et-execution">Compilation et exécution</a>
-  </li>
-  <li>
-    <a href="execution-a-l-interieur-de-docker">Exécution à l'intérieur de Docker</a>
-  </li>
-  <li>
-    <a href="video-de-demonstration">Vidéo de démonstration</a>
-  </li>
-</ol>
+<ul>
+  <li>À propos du projet</li>
+    <li>Captures d'écran</li>
+    <li>Architecture générale de l'application</li>
+    <li>Organisation du code source</li>
+    <li>Mesures de sécurité</li>
+    <li>Compilation et exécution</li>
+    <li>Exécution à l'intérieur de Docker</li>
+    <li>Vidéo de démonstration</li>
+</ul>
 
 </div>
 
