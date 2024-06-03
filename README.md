@@ -12,8 +12,8 @@
 - MOARRAF Yassine
 
 
-<div>
-<p>Table des matières</p>
+
+## Table des matières
 <ul>
   <li>À propos du projet</li>
     <li>Captures d'écran</li>
@@ -25,7 +25,7 @@
     <li>Vidéo de démonstration</li>
 </ul>
 
-</div>
+
 
 
 ## À propos du projet
