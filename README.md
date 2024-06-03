@@ -79,10 +79,64 @@ De plus, le serveur écoute uniquement sur localhost, ce qui signifie qu'aucun a
 Les étapes à suivre pour compiler le code sur une machine Ubuntu 22
 
 ```bash
-ls -l
+# Installation des outils de compilation
+sudo apt-get install -y cmake build-essential pipx pkg-config
+
+# Installation des dépendances
+sudo apt-get install -y libgoogle-glog-dev libsodium-dev libopus-dev libvpx-dev libconfig-dev libgtest-dev
+
+# Installation outils de compilation du frontend
+sudo apt-get install -y yarnpkg nodejs npm
+
+# Installation du gestionaire de paquet c++: Conan
+pipx install conan
+
+# Ajout du conan dnas le $PATH
+export PATH=${PATH}:${HOME}/.local/bin/
+
+# Initialisation du Conan
+conan profile detect --force
+
+# Téléchargement du repo
+git clone --depth=1  --recurse-submodules https://github.com/m-elhamlaoui/projet-web-p2p_tox_team
+
+# Compilation du backend
+cd projet-web-p2p_tox_team
+mkdir build
+cd build
+conan install ..  --build=missing
+cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=Release/generators/conan_toolchain.cmake  -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_BUILD_TYPE=Release -DRUN_YARN_BUILD=ON
+cmake --build .
+cp ../contrib/config.json bin/config.json
+
+# Compilation du frontend
+cd ../web_front
+yarnpkg install
+yarnpkg run build
+
+# Execution du programme
+cd ../build/bin
+./chatapp
 ```
 
-## Running it inside Docker
+### Naviguez vers: <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>
 
-## Demo video
+## Exécution à l'intérieur de Docker
 
+Vérifiez s'il y a suffisamment d'espace disponible sur votre machine, puis exécutez 'docker build' à l'intérieur du dépôt
+
+```bash
+# Téléchargement du repo
+git clone --depth=1  --recurse-submodules https://github.com/m-elhamlaoui/projet-web-p2p_tox_team
+cd projet-web-p2p_tox_team
+
+sudo docker build . -t chatapp
+# Attendez toutes les étapes (ça prend presque 30 minutes)
+# Lancez l'image créée avec un mapping entre le port 8080 du conteneur et le port 8080 de la machine hôte
+sudo docker run -p 8080:8080 chatapp
+```
+### Naviguez vers: <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>
+
+
+## Vidéo de démonstration
+Uploading....
