@@ -3,6 +3,15 @@
     <p>Une application de messagerie décentralisée de pair-à-pair, avec chiffrement de bout en bout, basée sur le protocole TOX.</p>
 </div>
 
+## Équipe
+-  
+- 
+- 
+- 
+- 
+- MOARRAF Yassine
+
+
 <div>
 <p>Table des matières</p>
 <ul>
