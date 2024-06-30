@@ -4,12 +4,6 @@
 </div>
 
 ## Équipe
-- x 
-- x
-- x
-- x
-- x
-- MOARRAF Yassine
 
 
 
