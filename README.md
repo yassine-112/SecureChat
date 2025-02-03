@@ -3,7 +3,7 @@
     <p>A decentralized peer-to-peer messaging application with end-to-end encryption, based on the TOX protocol.</p>
 </div>
 
-## Table des matières
+## Table of contents
 <ul>
   <li>About the project</li>
   <li>Screenshots</li>
@@ -72,28 +72,28 @@ P2P SecureChat is an instant messaging application focused on privacy and securi
 Les étapes à suivre pour compiler le code sur une machine Ubuntu 22
 
 ```bash
-# Installation des outils de compilation
+# Installing build tools
 sudo apt-get install -y cmake build-essential pipx pkg-config
 
-# Installation des dépendances
+# Installing dependencies
 sudo apt-get install -y libgoogle-glog-dev libsodium-dev libopus-dev libvpx-dev libconfig-dev libgtest-dev
 
-# Installation outils de compilation du frontend
+# Installing front-end build tools
 sudo apt-get install -y yarnpkg nodejs npm
 
-# Installation du gestionnaire de paquets c++: Conan
+# Installing the C++ package manager: Conan
 pipx install conan
 
-# Ajout du conan dnas le $PATH
+# Adding Conan to the $PATH
 export PATH=${PATH}:${HOME}/.local/bin/
 
-# Initialisation du Conan
+# Initializing Conan
 conan profile detect --force
 
-# Téléchargement du repo
+# Cloning the repository
 git clone --depth=1  --recurse-submodules https://github.com/m-elhamlaoui/projet-web-p2p_tox_team
 
-# Compilation du backend
+# Compiling the backend
 cd projet-web-p2p_tox_team
 mkdir build
 cd build
@@ -102,34 +102,29 @@ cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=Release/generators/conan_too
 cmake --build .
 cp ../contrib/config.json bin/config.json
 
-# Compilation du frontend
+# Compiling the frontend
 cd ../web_front
 yarnpkg install
 yarnpkg run build
 
-# Execution du programme
+# Running the program
 cd ../build/bin
 ./chatapp
 ```
 
-### Naviguez vers: <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>
+### Navigate to: <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>
 
 ## Running inside Docker
 
-Vérifiez s'il y a suffisamment d'espace disponible sur votre machine, puis exécutez 'docker build' à l'intérieur du dépôt
+Check if there is enough available space on your machine, then run 'docker build' inside the repository.
 
 ```bash
-# Téléchargement du repo
+# Cloning the repository
 git clone --depth=1  --recurse-submodules https://github.com/m-elhamlaoui/projet-web-p2p_tox_team
 cd projet-web-p2p_tox_team
 
 sudo docker build . -t chatapp
-# Attendez toutes les étapes (ça prend presque 30 minutes)
-# Lancez l'image créée avec un mapping entre le port 8080 du conteneur et le port 8080 de la machine hôte
+# Run the created image with a mapping between port 8080 of the container and port 8080 of the host machine.
 sudo docker run -p 8080:8080 chatapp
 ```
-### Naviguez vers: <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>
-
-
-## Vidéo de démonstration
-Voire moodle
+### Navigate to: <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>
