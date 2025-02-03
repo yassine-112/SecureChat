@@ -1,31 +1,25 @@
 <div align="center">
     <h2>Secure Chat</h2>
-    <p>Une application de messagerie décentralisée de pair-à-pair, avec chiffrement de bout en bout, basée sur le protocole TOX.</p>
+    <p>A decentralized peer-to-peer messaging application with end-to-end encryption, based on the TOX protocol.</p>
 </div>
-
-## Équipe
-
-
 
 ## Table des matières
 <ul>
-  <li>À propos du projet</li>
-    <li>Captures d'écran</li>
-    <li>Architecture générale de l'application</li>
-    <li>Organisation du code source</li>
-    <li>Mesures de sécurité</li>
-    <li>Compilation et exécution</li>
-    <li>Exécution à l'intérieur de Docker</li>
-    <li>Vidéo de démonstration</li>
+  <li>About the project</li>
+  <li>Screenshots</li>
+  <li>Overall architecture of the application</li>
+  <li>Source code structure</li>
+  <li>Compilation and execution</li>
+  <li>Running inside Docker</li>
 </ul>
 
 
 
 
-## À propos du projet
-P2P SecureChat est une application de messagerie instantanée axée sur la confidentialité et la sécurité, conçue pour permettre des communications chiffrées entre utilisateurs via un réseau peer-to-peer décentralisé.
+## About the project
+P2P SecureChat is an instant messaging application focused on privacy and security, designed to enable encrypted communications between users through a decentralized peer-to-peer network.
 
-## Captures d'écran
+## Screenshots
 ### Front Page: (Light theme)
 <img src="docs/screenshots/1.png"/>
 
@@ -37,13 +31,13 @@ P2P SecureChat est une application de messagerie instantanée axée sur la confi
 <img src="docs/screenshots/3.png"/>
 
 
-## Architecture générale de l'application
+## Overall architecture of the application
 <img src="docs/system_diagram.drawio.png" />
 
-### Languages utilisées
+### Languages used
 - Frontend: HTML, CSS, JS avec React JS
 - Backend: C++
-### Bibliothèques/Outils utilisées
+### Libraries/Tools used
 - Frontend:
   * <a href="https://ant.design/">Ant Design</a> (A React Components libraries)
   * Web APIs (<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket">Websocket</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">localstorage</a>)
@@ -55,31 +49,26 @@ P2P SecureChat est une application de messagerie instantanée axée sur la confi
   * <a href="https://github.com/atollk/copper">Copper</a> (Implements a queue used by the event loop)
   * <a href="https://github.com/google/glog">GoogleLog</a> (For logging)
   
-## Organisation du code source
+## Source code structure
 
 ```
-├── build                  (Répertoire de construction, contient les fichiers générés lors de la compilation)
-├── CMakeLists.txt         (Fichier principal de configuration de CMake)
-├── CMakeUserPresets.json (Fichier de configuration des préréglages utilisateur pour CMake)
-├── conanfile.txt          (Fichier de configuration pour Conan, un gestionnaire de paquets C++)
-├── contrib                (Fichiers de configucation du programme)
-├── c-toxcore              (Répertoire du code source de c-toxcore, une dépendance)
-├── Dockerfile             (Fichier de configuration pour la création d'une image Docker)
-├── docs                   (Documentation du projet)
-├── include                (Répertoire contenant les fichiers d'en-tête)
-├── libs                   (Répertoire contenant des bibliothèques externes)
-├── README.md              (Fichier README contenant des informations sur le projet)
-├── src                    (Répertoire contenant le code source principal en c++)
-├── uml                    (Diagrammes UML du projet)
-├── web_front              (Front-end web du projet)
+├── build                  (Build directory, contains files generated during compilation)
+├── CMakeLists.txt         (Main configuration file for CMake)
+├── CMakeUserPresets.json  (User presets configuration file for CMake)
+├── conanfile.txt          (Configuration file for Conan, a C++ package manager)
+├── contrib                (Configuration files for the program)
+├── c-toxcore              (Source code directory for c-toxcore, a dependency)
+├── Dockerfile             (Configuration file for creating a Docker image)
+├── docs                   (Project documentation)
+├── include                (Directory containing header files)
+├── libs                   (Directory containing external libraries)
+├── README.md              (README file containing information about the project)
+├── src                    (Directory containing the main source code in C++)
+├── uml                    (UML diagrams of the project)
+├── web_front              (Web front-end of the project)
 ```
 
-## Mesures de sécurité
-Étant donné l'utilisation de React JS dans le front-end, plusieurs mesures de sécurité sont intégrées pour contrer les attaques frontales telles que les attaques XSS (Cross-Site Scripting). React JS offre des mécanismes intégrés pour prévenir de telles attaques, notamment en utilisant le concept de Virtual DOM pour contrôler le rendu des éléments HTML. Cela garantit que toute insertion de données est traitée de manière sécurisée et échappe aux caractères potentiellement dangereux.
-
-De plus, le serveur écoute uniquement sur localhost, ce qui signifie qu'aucun autre utilisateur ne peut accéder à l'instance de l'application d'un autre. Cela limite considérablement les risques de violation de sécurité en restreignant l'accès aux ressources de l'application à la machine locale. En conséquence, les interactions avec l'application sont sécurisées et isolées, renforçant ainsi la protection contre les intrusions et les exploitations malveillantes.
-
-## Compilation et exécution
+## Compilation and execution
 Les étapes à suivre pour compiler le code sur une machine Ubuntu 22
 
 ```bash
@@ -125,7 +114,7 @@ cd ../build/bin
 
 ### Naviguez vers: <a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>
 
-## Exécution à l'intérieur de Docker
+## Running inside Docker
 
 Vérifiez s'il y a suffisamment d'espace disponible sur votre machine, puis exécutez 'docker build' à l'intérieur du dépôt
 
