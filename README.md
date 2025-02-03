@@ -69,8 +69,7 @@ P2P SecureChat is an instant messaging application focused on privacy and securi
 ```
 
 ## Compilation and execution
-Les étapes à suivre pour compiler le code sur une machine Ubuntu 22
-
+The following steps were tested on an Ubuntu 22.04 LTS machine.
 ```bash
 # Installing build tools
 sudo apt-get install -y cmake build-essential pipx pkg-config
